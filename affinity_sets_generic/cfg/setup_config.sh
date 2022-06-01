@@ -42,9 +42,9 @@ delivery="\"Ordered\""
 reserved="[\"1\"]"
 profiles="\"DEFAULT\""
 i=0
-while (( i <= NUM_SHARDS )); do
+while (( i <= NUM_SHARDS + 1 )); do
     # layout
-    if (( i > 1 )); then
+    if (( i > 1 & i <= NUM_SHARDS )); then
         num_nodes="$num_nodes,\"1\""
         delivery="$delivery,\"Ordered\""
         reserved="$reserved,[\"$i\"]"
@@ -78,6 +78,10 @@ while (( i <= NUM_SHARDS )); do
 
     let i++
 done
+
+# client config
+let i--
+mv n$i client
 
 # layout
 sed "s@XXX_MIN_NODES_XXX@$num_nodes@g" $LAYOUT_TMP | 
