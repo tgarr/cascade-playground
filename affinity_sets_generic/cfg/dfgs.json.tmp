@@ -1,0 +1,27 @@
+[
+    {
+        "id": "a3ef5780-362b-4e87-ab44-f2fee9c2d4c5",
+        "desc": "Generic DFG",
+        "graph": [
+            {
+                "pathname": "/entry",
+                "shard_dispatcher_list": ["one"],
+                "user_defined_logic_list": ["d7bd9797-9e9c-491a-8b17-f74fea8ae52e"],
+                "destinations": [{"/category/new" : "put"}]
+            },
+            {
+                "pathname": "/category/new",
+                "shard_dispatcher_list": ["one"],
+                "user_defined_logic_list": ["8eb917ad-5c51-44de-be0c-2d2803898fd1"],
+                "destinations": [{"/category/output" : "put"}]
+            },
+            {
+                "pathname": "/category/output",
+                "shard_dispatcher_list": ["one"],
+                "user_defined_logic_list": ["b45678de-7a88-4afa-b571-6c87a2f30b01"],
+                "destinations": [{}]
+            }
+        ]
+    }
+]
+
