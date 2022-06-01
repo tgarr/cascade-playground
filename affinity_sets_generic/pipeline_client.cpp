@@ -43,6 +43,9 @@ void benchmark(ServiceClientAPI& capi,int object_size,int object_rate,int data_s
 int main(int argc, char** argv) {
     if(!usage(argc,argv)) return 0;
 
+    std::cout << NUM_CATEGORIES << std::endl;
+    return 0;
+
     // benchmark parameters   
     int object_size = std::stoi(argv[1]); 
     int object_rate = std::stoi(argv[2]); 

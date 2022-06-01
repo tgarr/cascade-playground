@@ -5,8 +5,11 @@
 #include <fstream>
 #include <string>
 
-#define NUM_CATEGORIES 10
 #define BENCHMARK_TIME 30
+
+#ifndef NUM_CATEGORIES
+#define NUM_CATEGORIES 10
+#endif
 
 #define OBJ_PATH_SEP "/"
 #define OBJ_ENTRY_PATH OBJ_PATH_SEP "entry"

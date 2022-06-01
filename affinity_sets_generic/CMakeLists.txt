@@ -12,6 +12,7 @@ find_package(spdlog 1.3.1 REQUIRED)
 find_package(derecho CONFIG REQUIRED)
 find_package(cascade CONFIG REQUIRED)
 
+# Entry UDL
 add_library(entry_udl SHARED entry_udl.cpp)
 target_include_directories(entry_udl PRIVATE
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
@@ -20,6 +21,7 @@ target_include_directories(entry_udl PRIVATE
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
 )
 
+# Category UDL
 add_library(category_udl SHARED category_udl.cpp)
 target_include_directories(category_udl PRIVATE
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
@@ -28,6 +30,7 @@ target_include_directories(category_udl PRIVATE
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
 )
 
+# Return UDL
 add_library(return_udl SHARED return_udl.cpp)
 target_include_directories(return_udl PRIVATE
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
@@ -36,9 +39,29 @@ target_include_directories(return_udl PRIVATE
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
 )
 
+# Client and config files
 add_executable(pipeline_client pipeline_client.cpp)
 set_target_properties(pipeline_client PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES ${cascade_INCLUDE_DIRS}
 )
 target_link_libraries(pipeline_client derecho::cascade)
+
+if(NOT DEFINED NUM_SHARDS)
+    set(NUM_SHARDS 2)
+endif(NOT DEFINED NUM_SHARDS)
+
+if(DEFINED NUM_CATEGORIES)
+    target_compile_definitions(pipeline_client PRIVATE NUM_CATEGORIES=${NUM_CATEGORIES})
+endif(DEFINED NUM_CATEGORIES)
+
+add_custom_command(TARGET pipeline_client POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/cfg
+        ${CMAKE_CURRENT_BINARY_DIR}/cfg
+    COMMAND ${CMAKE_CURRENT_BINARY_DIR}/cfg/setup_config.sh ${NUM_SHARDS}
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cfg/setup_config.sh
+            ${CMAKE_CURRENT_SOURCE_DIR}/cfg/layout.json.tmp
+            ${CMAKE_CURRENT_SOURCE_DIR}/cfg/dfgs.json.tmp
+            ${CMAKE_CURRENT_SOURCE_DIR}/cfg/udl_dlls.cfg.tmp
+            ${CMAKE_CURRENT_SOURCE_DIR}/cfg/derecho.cfg.local
+)
 
