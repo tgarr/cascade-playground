@@ -80,6 +80,7 @@ while (( i <= NUM_SHARDS + 1 )); do
 done
 
 # client config
+rm -rf client
 let i--
 mv n$i client
 
