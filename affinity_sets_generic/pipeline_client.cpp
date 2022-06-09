@@ -35,6 +35,18 @@ void setup(ServiceClientAPI& capi,int object_size,int object_rate,int data_size)
 
     // put data   
 
+    ObjectWithStringKey obj;
+    obj.key = "/entry/test";
+    obj.previous_version = INVALID_VERSION;
+    obj.previous_version_by_key = INVALID_VERSION;
+    obj.blob = Blob(reinterpret_cast<const uint8_t*>(random_buffer(1000)),1000);
+    auto res = capi.put(obj);
+    for (auto& reply_future:res.get()) {
+        auto reply = reply_future.second.get();
+        std::cout << "node(" << reply_future.first << ") replied with version:" << std::get<0>(reply)
+                  << ",ts_us:" << std::get<1>(reply)
+                  << std::endl;
+    }
 }
 
 void benchmark(ServiceClientAPI& capi,int object_size,int object_rate,int data_size){
@@ -42,9 +54,6 @@ void benchmark(ServiceClientAPI& capi,int object_size,int object_rate,int data_s
 
 int main(int argc, char** argv) {
     if(!usage(argc,argv)) return 0;
-
-    std::cout << NUM_CATEGORIES << std::endl;
-    return 0;
 
     // benchmark parameters   
     int object_size = std::stoi(argv[1]); 

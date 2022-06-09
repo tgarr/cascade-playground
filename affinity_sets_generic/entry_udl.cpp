@@ -17,14 +17,18 @@ class EntryObserver: public OffCriticalDataPathObserver {
                               const std::unordered_map<std::string,bool>& outputs,
                               ICascadeContext* ctxt,
                               uint32_t worker_id) override {
-
-        // TODO entry logic
-        // auto* typed_ctxt = dynamic_cast<DefaultCascadeContextType*>(ctxt);
-        // typed_ctxt->get_service_client_ref().put_and_forget(obj)
-
         std::cout << "[Entry]: I(" << worker_id << ") received an object from sender:" << sender << " with key=" << key_string 
                   << ", matching prefix=" << key_string.substr(0,prefix_length) << std::endl;
 
+        auto* typed_ctxt = dynamic_cast<DefaultCascadeContextType*>(ctxt);
+
+        ObjectWithStringKey obj;
+        obj.key = "/category/data/test";
+        obj.previous_version = INVALID_VERSION;
+        obj.previous_version_by_key = INVALID_VERSION;
+        obj.blob = Blob(reinterpret_cast<const uint8_t*>(random_buffer(1000)),1000);
+
+        typed_ctxt->get_service_client_ref().put_and_forget(obj);
     }
 
     static std::shared_ptr<OffCriticalDataPathObserver> ocdpo_ptr;

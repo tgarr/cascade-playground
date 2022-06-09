@@ -28,7 +28,11 @@
 
 // user defined affinity sets
 const std::string affinity_logic(const std::string & key){
-    if(key.find(OBJ_ENTRY_PATH) == 0) return ENTRY_AFFINITY_KEY; // entry
+    if(key.find(OBJ_ENTRY_PATH) == 0){
+        std::cout << "[AFFINITY_LOGIC] key: " << key << " | affinity key: " << ENTRY_AFFINITY_KEY << std::endl;
+        return ENTRY_AFFINITY_KEY; // entry
+    }
+
     std::string affinity_key = key;
 
     // category
@@ -54,6 +58,8 @@ const std::string affinity_logic(const std::string & key){
     
         if(affinity_key.size() == 0) affinity_key = key;
     }
+
+    std::cout << "[AFFINITY_LOGIC] key: " << key << " | affinity key: " << affinity_key << std::endl;
 
     return affinity_key;
 }
