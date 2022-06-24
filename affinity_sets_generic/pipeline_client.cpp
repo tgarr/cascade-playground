@@ -1,21 +1,11 @@
 #include <iostream>
 #include <string>
-#include <cascade/service_client_api.hpp>
 #include "common.hpp"
-
-using namespace derecho::cascade;
 
 bool usage(int argc, char** argv){
     if(argc >= 4) return true;
     std::cout << argv[0] << " <object_size> <object_rate> <data_size>" << std::endl;
     return false;
-}
-
-void create_pool(ServiceClientAPI& capi,const std::string& path){
-    auto res = capi.template create_object_pool<VolatileCascadeStoreWithStringKey>(path,0);
-    for (auto& reply_future:res.get()) {
-        auto reply = reply_future.second.get();
-    }
 }
 
 void setup(ServiceClientAPI& capi,int object_size,int object_rate,int data_size){

@@ -4,6 +4,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cascade/service_client_api.hpp>
+
+using namespace derecho::cascade;
 
 #define BENCHMARK_TIME 30
 
@@ -77,6 +80,17 @@ char * random_buffer(int size){
     rndfile.close();
 
     return buffer;
+}
+
+void create_pool(ServiceClientAPI& capi,const std::string& path){
+    // check if already exists
+    auto opm = capi.find_object_pool(path);
+    if (opm.is_valid() && !opm.is_null()) return;
+
+    auto res = capi.template create_object_pool<VolatileCascadeStoreWithStringKey>(path,0);
+    for (auto& reply_future:res.get()) {
+        auto reply = reply_future.second.get();
+    }
 }
 
 #endif

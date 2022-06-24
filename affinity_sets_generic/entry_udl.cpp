@@ -22,8 +22,10 @@ class EntryObserver: public OffCriticalDataPathObserver {
 
         auto* typed_ctxt = dynamic_cast<DefaultCascadeContextType*>(ctxt);
 
+        create_pool(typed_ctxt->get_service_client_ref(),"/category/new/test");
+
         ObjectWithStringKey obj;
-        obj.key = "/category/data/test";
+        obj.key = "/category/new/test/ID";
         obj.previous_version = INVALID_VERSION;
         obj.previous_version_by_key = INVALID_VERSION;
         obj.blob = Blob(reinterpret_cast<const uint8_t*>(random_buffer(1000)),1000);
