@@ -1,5 +1,9 @@
 #include <cascade/user_defined_logic_interface.hpp>
 #include <iostream>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <cstring>
+#include <unistd.h>
 #include "common.hpp"
 
 namespace derecho{
@@ -7,6 +11,24 @@ namespace cascade{
 
 #define UDL_UUID "b45678de-7a88-4afa-b571-6c87a2f30b01"
 #define UDL_DESC "Notify the client that the pipeline is finished."
+
+void notify_client(const char* ip_address,int* values){
+    struct sockaddr_in servaddr;
+
+    // create socket
+    int sockfd = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
+
+    // server addr
+    memset(&servaddr, 0, sizeof(servaddr));
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_port = htons(CLIENT_RETURN_UDP_PORT);
+    servaddr.sin_addr.s_addr = inet_addr(ip_address);
+
+    const char* buffer = (const char *)values;
+    sendto(sockfd,buffer,sizeof(values),MSG_CONFIRM,(const struct sockaddr *) &servaddr,sizeof(servaddr));
+
+    close(sockfd);
+}
 
 class ReturnObserver: public OffCriticalDataPathObserver {
     virtual void operator () (const node_id_t sender,
@@ -18,13 +40,18 @@ class ReturnObserver: public OffCriticalDataPathObserver {
                               ICascadeContext* ctxt,
                               uint32_t worker_id) override {
 
-        // TODO entry logic
-        // auto* typed_ctxt = dynamic_cast<DefaultCascadeContextType*>(ctxt);
-        // typed_ctxt->get_service_client_ref().put_and_forget(obj)
+        // extract category and id
+        int values[2];
+        std::string key_values = key_string.substr(prefix_length);
+        std::string::size_type pos = key_values.find(OBJ_PATH_SEP);
+        values[0] = std::stoi(key_values.substr(pos+1));
+        values[1] = std::stoi(key_values.substr(0,pos));
 
-        std::cout << "[Return]: I(" << worker_id << ") received an object from sender:" << sender << " with key=" << key_string 
-                  << ", matching prefix=" << key_string.substr(0,prefix_length) << std::endl;
+        std::cout << "[RETURN] received: " << key_string << " | category: " << values[1] << " | id: " << values[0] <<  std::endl;
 
+        // send UDP packet
+        std::cout << "[RETURN] notifying client: " << CLIENT_IP_ADDR << std::endl;
+        notify_client(CLIENT_IP_ADDR,values);
     }
 
     static std::shared_ptr<OffCriticalDataPathObserver> ocdpo_ptr;

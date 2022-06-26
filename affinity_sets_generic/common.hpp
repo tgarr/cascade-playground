@@ -4,11 +4,12 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <functional>
 #include <cascade/service_client_api.hpp>
 
 using namespace derecho::cascade;
 
-#define BENCHMARK_TIME 30
+#define BENCHMARK_TIME 5
 
 #ifndef NUM_CATEGORIES
 #define NUM_CATEGORIES 10
@@ -26,15 +27,15 @@ using namespace derecho::cascade;
 
 #define ENTRY_AFFINITY_KEY "entry"
 
+#define CLIENT_IP_ADDR "127.0.0.1"
 #define CLIENT_RETURN_UDP_PORT 43259
-#define CLIENT_RETURN_TIMEOUT 10
+#define CLIENT_RETURN_TIMEOUT 5
+#define RETURN_MESSAGE_SIZE sizeof(int)*2
 
 // user defined affinity sets
 const std::string affinity_logic(const std::string & key){
-    if(key.find(OBJ_ENTRY_PATH) == 0){
-        std::cout << "[AFFINITY_LOGIC] key: " << key << " | affinity key: " << ENTRY_AFFINITY_KEY << std::endl;
-        return ENTRY_AFFINITY_KEY; // entry
-    }
+    // entry
+    if(key.find(OBJ_ENTRY_PATH) == 0) return ENTRY_AFFINITY_KEY;
 
     std::string affinity_key = key;
 
@@ -61,8 +62,6 @@ const std::string affinity_logic(const std::string & key){
     
         if(affinity_key.size() == 0) affinity_key = key;
     }
-
-    std::cout << "[AFFINITY_LOGIC] key: " << key << " | affinity key: " << affinity_key << std::endl;
 
     return affinity_key;
 }
@@ -91,6 +90,26 @@ void create_pool(ServiceClientAPI& capi,const std::string& path){
     for (auto& reply_future:res.get()) {
         auto reply = reply_future.second.get();
     }
+}
+
+void put_object(ServiceClientAPI& capi, ObjectWithStringKey& obj){
+    auto res = capi.put(obj);
+    for (auto& reply_future:res.get()){
+        auto reply = reply_future.second.get();
+    }
+}
+
+void put_random_object(ServiceClientAPI& capi,const std::string& key,int size){
+    ObjectWithStringKey obj;
+    obj.key = key;
+    obj.previous_version = INVALID_VERSION;
+    obj.previous_version_by_key = INVALID_VERSION;
+    obj.blob = Blob(reinterpret_cast<const uint8_t*>(random_buffer(size)),size);
+    put_object(capi,obj);
+}
+
+std::size_t hash_blob(const uint8_t* bytes, std::size_t size){
+    return std::_Hash_bytes(bytes,size,0);
 }
 
 #endif

@@ -18,13 +18,35 @@ class CategoryObserver: public OffCriticalDataPathObserver {
                               ICascadeContext* ctxt,
                               uint32_t worker_id) override {
 
-        // TODO entry logic
-        // auto* typed_ctxt = dynamic_cast<DefaultCascadeContextType*>(ctxt);
-        // typed_ctxt->get_service_client_ref().put_and_forget(obj)
+        // extract category and id
+        std::string key_values = key_string.substr(prefix_length);
+        std::string::size_type pos = key_values.find(OBJ_PATH_SEP);
+        std::string category = key_values.substr(0,pos);
+        std::string obj_id = key_values.substr(pos+1);
+        
+        std::cout << "[CATEGORY] received: " << key_string << " | category: " << category << " | id: " << obj_id << std::endl;
+        auto* typed_ctxt = dynamic_cast<DefaultCascadeContextType*>(ctxt);
 
-        std::cout << "[Category]: I(" << worker_id << ") received an object from sender:" << sender << " with key=" << key_string 
-                  << ", matching prefix=" << key_string.substr(0,prefix_length) << std::endl;
+        // compute result
+        const auto* const value = dynamic_cast<const ObjectWithStringKey* const>(value_ptr);
+        auto result = hash_blob(value->blob.bytes,value->blob.size);
 
+        // get data and compute result
+        auto res = typed_ctxt->get_service_client_ref().get(OBJ_DATA_CATEGORY_PATH OBJ_PATH_SEP + category);
+        for (auto& reply_future:res.get()){
+            auto data_obj = reply_future.second.get();
+            result += hash_blob(data_obj.blob.bytes,data_obj.blob.size);
+        }
+
+        // put result
+        ObjectWithStringKey obj;
+        obj.key = OBJ_OUTPUT_CATEGORY_PATH OBJ_PATH_SEP + category + OBJ_PATH_SEP + obj_id;
+        obj.previous_version = INVALID_VERSION;
+        obj.previous_version_by_key = INVALID_VERSION;
+        obj.blob = Blob(reinterpret_cast<const uint8_t*>(&result),sizeof(result));
+
+        std::cout << "[CATEGORY] result: " << result << " | putting: " << obj.key << std::endl;
+        typed_ctxt->get_service_client_ref().put_and_forget(obj);
     }
 
     static std::shared_ptr<OffCriticalDataPathObserver> ocdpo_ptr;

@@ -6,7 +6,7 @@ CURDIR=`pwd`
 cd $SCRIPTPATH
 
 PIPEFILE=cascade.pipe
-SHOWLINES=60
+SHOWLINES=40
 
 num=0
 for i in ./cfg/n*; do
@@ -23,7 +23,7 @@ for i in ./cfg/n*; do
     let num++
 done
 
-watch -n 0.5 tail -n $((SHOWLINES/num)) *.output
+watch -n 0.5 tail -n $((SHOWLINES/num)) n*.output
 
 for i in ./cfg/n*; do
     echo stop > $i/$PIPEFILE

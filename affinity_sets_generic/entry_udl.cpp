@@ -17,19 +17,31 @@ class EntryObserver: public OffCriticalDataPathObserver {
                               const std::unordered_map<std::string,bool>& outputs,
                               ICascadeContext* ctxt,
                               uint32_t worker_id) override {
-        std::cout << "[Entry]: I(" << worker_id << ") received an object from sender:" << sender << " with key=" << key_string 
-                  << ", matching prefix=" << key_string.substr(0,prefix_length) << std::endl;
 
+        std::cout << "[ENTRY] received: " << key_string << std::endl;
+        
+        if(key_string == OBJ_ENTRY_PATH OBJ_PATH_SEP + std::string("data")) return;
         auto* typed_ctxt = dynamic_cast<DefaultCascadeContextType*>(ctxt);
 
-        create_pool(typed_ctxt->get_service_client_ref(),"/category/new/test");
+        // find out category
+        const auto* const value = dynamic_cast<const ObjectWithStringKey* const>(value_ptr);
+        auto hashes = hash_blob(value->blob.bytes,value->blob.size);
 
-        ObjectWithStringKey obj;
-        obj.key = "/category/new/test/ID";
-        obj.previous_version = INVALID_VERSION;
-        obj.previous_version_by_key = INVALID_VERSION;
-        obj.blob = Blob(reinterpret_cast<const uint8_t*>(random_buffer(1000)),1000);
+        // get data
+        auto res = typed_ctxt->get_service_client_ref().get(OBJ_ENTRY_PATH OBJ_PATH_SEP + std::string("data"));
+        for (auto& reply_future:res.get()){
+            auto data_obj = reply_future.second.get();
+            hashes += hash_blob(data_obj.blob.bytes,data_obj.blob.size);
+        }
+        int category = hashes % NUM_CATEGORIES;
 
+        // make a copy
+        ObjectWithStringKey obj(*value);
+        obj.key = OBJ_NEW_CATEGORY_PATH OBJ_PATH_SEP + std::to_string(category) + OBJ_PATH_SEP + key_string.substr(prefix_length);
+        obj.set_previous_version(INVALID_VERSION,INVALID_VERSION);
+
+        // put next object in the pipeline
+        std::cout << "[ENTRY] category: " << category << " | putting: " << obj.key << std::endl;
         typed_ctxt->get_service_client_ref().put_and_forget(obj);
     }
 

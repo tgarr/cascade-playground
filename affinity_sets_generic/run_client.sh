@@ -6,7 +6,7 @@ CURDIR=`pwd`
 CLIENTBIN=$SCRIPTPATH/pipeline_client
 
 cd $SCRIPTPATH/cfg/client
-$CLIENTBIN $@
+$CLIENTBIN $@ 2>> $SCRIPTPATH/client.results | tee $SCRIPTPATH/client.output
 
 cd $CURDIR
 
