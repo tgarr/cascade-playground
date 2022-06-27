@@ -5,6 +5,8 @@
 #include <fstream>
 #include <string>
 #include <functional>
+#include <chrono>
+#include <random>
 #include <cascade/service_client_api.hpp>
 
 using namespace derecho::cascade;
@@ -31,6 +33,11 @@ using namespace derecho::cascade;
 #define CLIENT_RETURN_UDP_PORT 43259
 #define CLIENT_RETURN_TIMEOUT 5
 #define RETURN_MESSAGE_SIZE sizeof(int)*2
+
+#define CLIENT_ID 0
+#define CLIENT_SEED 3
+
+static std::mt19937 cascade_client_rng(CLIENT_SEED);
 
 // user defined affinity sets
 const std::string affinity_logic(const std::string & key){
@@ -71,13 +78,8 @@ const std::string affinity_logic(const std::string & key){
 }*/
 
 char * random_buffer(int size){
-    std::ifstream rndfile;
     char *buffer = new char[size];
-
-    rndfile.open("/dev/random");
-    rndfile.read(buffer,size);
-    rndfile.close();
-
+    memset(buffer,cascade_client_rng() % 256,size);
     return buffer;
 }
 
@@ -92,20 +94,26 @@ void create_pool(ServiceClientAPI& capi,const std::string& path){
     }
 }
 
-void put_object(ServiceClientAPI& capi, ObjectWithStringKey& obj){
+std::chrono::high_resolution_clock::time_point put_object(ServiceClientAPI& capi, ObjectWithStringKey& obj){
     auto res = capi.put(obj);
+    auto now = std::chrono::high_resolution_clock::now();
     for (auto& reply_future:res.get()){
         auto reply = reply_future.second.get();
     }
+    return now;
 }
 
-void put_random_object(ServiceClientAPI& capi,const std::string& key,int size){
+std::chrono::high_resolution_clock::time_point put_random_object(ServiceClientAPI& capi,const std::string& key,int size){
     ObjectWithStringKey obj;
     obj.key = key;
     obj.previous_version = INVALID_VERSION;
     obj.previous_version_by_key = INVALID_VERSION;
-    obj.blob = Blob(reinterpret_cast<const uint8_t*>(random_buffer(size)),size);
-    put_object(capi,obj);
+
+    char* buffer = random_buffer(size);
+    obj.blob = Blob(reinterpret_cast<const uint8_t*>(buffer),size);
+    delete buffer;
+
+    return put_object(capi,obj);
 }
 
 std::size_t hash_blob(const uint8_t* bytes, std::size_t size){

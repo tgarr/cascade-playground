@@ -112,12 +112,8 @@ int benchmark(ServiceClientAPI& capi,int object_size,int object_rate,int data_si
 
         // put new object
         std::string key = OBJ_ENTRY_PATH OBJ_PATH_SEP + std::to_string(object_id);
-        put_random_object(capi,key,object_size);
+        send_timestamps[object_id] = put_random_object(capi,key,object_size);
         
-        // save timestamp
-        auto now = std::chrono::high_resolution_clock::now();
-        send_timestamps[object_id] = now;
-
         // sleep
         auto elapsed = std::chrono::high_resolution_clock::now() - start;
         if(elapsed < period) std::this_thread::sleep_for(period - elapsed);
@@ -167,6 +163,7 @@ int main(int argc, char** argv) {
    
     // run benchmark 
     int num_objects = benchmark(capi,object_size,object_rate,data_size,send_timestamps);
+    std::this_thread::sleep_for(std::chrono::seconds(CLIENT_RETURN_TIMEOUT));
     stop_listen = true;
     listener.join();
     
