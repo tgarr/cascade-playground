@@ -37,8 +37,7 @@ disable_partitioning_safety = false
 # maximum payload size for P2P requests
 max_p2p_request_payload_size = 1048576
 # maximum payload size for P2P replies
-#max_p2p_reply_payload_size = 10240
-max_p2p_reply_payload_size = 1048576
+max_p2p_reply_payload_size = 10240
 # window size for P2P requests and replies
 p2p_window_size = 4
 
@@ -70,6 +69,17 @@ window_size = 16
 # the send algorithm for RDMC. Other options are
 # chain_send, sequential_send, tree_send
 rdmc_send_algorithm = binomial_send
+# config for experimentation
+[SUBGROUP/EVAL]
+max_payload_size = 10485760
+max_reply_payload_size = 102400
+max_smc_payload_size = 10240
+block_size = 1048576
+window_size = 4
+rdmc_send_algorithm = binomial_send
+max_p2p_request_payload_size = 10485760
+max_p2p_reply_payload_size = 10240
+p2p_window_size = 4
 # - SAMPLE for large message settings
 [SUBGROUP/LARGE]
 max_payload_size = 102400

@@ -40,7 +40,7 @@ external_port=`grep "^external_port =" $LOCAL_TMP | cut -d "=" -f2 | tr -d " "`
 num_nodes="\"1\""
 delivery="\"Ordered\""
 reserved="[\"1\"]"
-profiles="\"DEFAULT\""
+profiles="\"EVAL\""
 i=0
 while (( i <= NUM_SHARDS + 1 )); do
     # layout
@@ -48,7 +48,7 @@ while (( i <= NUM_SHARDS + 1 )); do
         num_nodes="$num_nodes,\"1\""
         delivery="$delivery,\"Ordered\""
         reserved="$reserved,[\"$i\"]"
-        profiles="$profiles,\"DEFAULT\""
+        profiles="$profiles,\"EVAL\""
     fi
 
     # cascade configs
