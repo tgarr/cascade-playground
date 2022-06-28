@@ -24,7 +24,7 @@ class CategoryObserver: public OffCriticalDataPathObserver {
         std::string category = key_values.substr(0,pos);
         std::string obj_id = key_values.substr(pos+1);
         
-        std::cout << "[CATEGORY] received: " << key_string << " | category: " << category << " | id: " << obj_id << std::endl;
+        // std::cout << "[CATEGORY] received: " << key_string << " | category: " << category << " | id: " << obj_id << std::endl;
         auto* typed_ctxt = dynamic_cast<DefaultCascadeContextType*>(ctxt);
 
         // compute result
@@ -49,7 +49,7 @@ class CategoryObserver: public OffCriticalDataPathObserver {
         obj.previous_version_by_key = INVALID_VERSION;
         obj.blob = Blob(reinterpret_cast<const uint8_t*>(&result),sizeof(result));
 
-        std::cout << "[CATEGORY] result: " << result << " | putting: " << obj.key << std::endl;
+        // std::cout << "[CATEGORY] result: " << result << " | putting: " << obj.key << std::endl;
         typed_ctxt->get_service_client_ref().put_and_forget(obj);
     }
 

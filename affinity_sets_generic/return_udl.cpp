@@ -51,14 +51,14 @@ class ReturnObserver: public OffCriticalDataPathObserver {
         std::string client_id = obj_id.substr(0,pos);
         values[0] = std::stoi(obj_id.substr(pos+1));
         
-        std::cout << "[RETURN] received: " << key_string << " | category: " << values[1] << " | id: " << values[0] << " | client_id: " << client_id << std::endl;
+        // std::cout << "[RETURN] received: " << key_string << " | category: " << values[1] << " | id: " << values[0] << " | client_id: " << client_id << std::endl;
 
         // send UDP packet
         auto* typed_ctxt = dynamic_cast<DefaultCascadeContextType*>(ctxt);
         std::string config_key = OBJ_CONFIG_CLIENT_DATA + client_id;
         char* client_ip = get_config_str(typed_ctxt->get_service_client_ref(),config_key);
 
-        std::cout << "[RETURN] notifying client: " << client_ip << std::endl;
+        // std::cout << "[RETURN] notifying client: " << client_ip << std::endl;
         notify_client(client_ip,values,std::stoi(client_id));
     }
 

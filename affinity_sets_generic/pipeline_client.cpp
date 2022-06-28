@@ -58,7 +58,7 @@ void listen_notifications(std::chrono::high_resolution_clock::time_point* rcv_ti
             auto now = std::chrono::high_resolution_clock::now();
             int* values = reinterpret_cast<int*>(buffer);
             rcv_timestamps[values[0]] = now;
-            std::cout << "[RETURN] finished for id: " << values[0] << " | category: " << values[1] << std::endl;
+            //std::cout << "[RETURN] finished for id: " << values[0] << " | category: " << values[1] << std::endl;
         }
     }
 

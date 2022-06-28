@@ -18,7 +18,7 @@ class EntryObserver: public OffCriticalDataPathObserver {
                               ICascadeContext* ctxt,
                               uint32_t worker_id) override {
 
-        std::cout << "[ENTRY] received: " << key_string << std::endl;
+        // std::cout << "[ENTRY] received: " << key_string << std::endl;
         
         if(key_string.find(OBJ_ENTRY_PATH OBJ_PATH_SEP + std::string("data")) == 0) return;
         auto* typed_ctxt = dynamic_cast<DefaultCascadeContextType*>(ctxt);
@@ -45,7 +45,7 @@ class EntryObserver: public OffCriticalDataPathObserver {
         obj.set_previous_version(INVALID_VERSION,INVALID_VERSION);
 
         // put next object in the pipeline
-        std::cout << "[ENTRY] category: " << category << " | putting: " << obj.key << std::endl;
+        // std::cout << "[ENTRY] category: " << category << " | putting: " << obj.key << std::endl;
         typed_ctxt->get_service_client_ref().put_and_forget(obj);
     }
 
