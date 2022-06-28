@@ -76,11 +76,18 @@ void setup(ServiceClientAPI& capi,int object_size,int object_rate,int data_size,
     std::cout << "Creating object pools ... "; fflush(stdout);
     create_pool(capi,OBJ_ENTRY_PATH);
     create_pool(capi,OBJ_DATA_CATEGORY_PATH);
+    create_pool(capi,OBJ_CONFIG_PATH);
     for(int i=0;i<NUM_CATEGORIES;i++){ 
         create_pool(capi,OBJ_NEW_CATEGORY_PATH OBJ_PATH_SEP + std::to_string(i));
         create_pool(capi,OBJ_OUTPUT_CATEGORY_PATH OBJ_PATH_SEP + std::to_string(i));
     }
     std::cout << "done" << std::endl;
+
+    // getting/putting config to decide what to do
+    std::cout << "Getting/putting config ... "; fflush(stdout);
+    // TODO 
+    std::cout << "done" << std::endl;
+
 
     std::cout << "Putting data objects ... "; fflush(stdout);
 
@@ -130,8 +137,9 @@ int benchmark(ServiceClientAPI& capi,int object_size,int object_rate,int data_si
 void measurements(std::chrono::high_resolution_clock::time_point* send_timestamps,std::chrono::high_resolution_clock::time_point* rcv_timestamps,int num_objects,int object_size,int object_rate,int data_size){
     std::cerr << object_size << " " << object_rate << " " << data_size << " " << num_objects << std::endl;
     for(int i=0;i<num_objects;i++){
+        auto exp_time = std::chrono::duration_cast<std::chrono::microseconds>(send_timestamps[i] - send_timestamps[0]);
         auto latency = std::chrono::duration_cast<std::chrono::microseconds>(rcv_timestamps[i] - send_timestamps[i]);
-        std::cerr << i << " " << latency.count() << std::endl;
+        std::cerr << i << " " << latency.count() << " " << exp_time.count() << std::endl;
     }
 }
 
