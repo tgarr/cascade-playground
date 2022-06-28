@@ -20,7 +20,7 @@ class EntryObserver: public OffCriticalDataPathObserver {
 
         std::cout << "[ENTRY] received: " << key_string << std::endl;
         
-        if(key_string == OBJ_ENTRY_PATH OBJ_PATH_SEP + std::string("data")) return;
+        if(key_string.find(OBJ_ENTRY_PATH OBJ_PATH_SEP + std::string("data")) == 0) return;
         auto* typed_ctxt = dynamic_cast<DefaultCascadeContextType*>(ctxt);
 
         // find out category
@@ -28,10 +28,14 @@ class EntryObserver: public OffCriticalDataPathObserver {
         auto hashes = hash_blob(value->blob.bytes,value->blob.size);
 
         // get data
-        auto res = typed_ctxt->get_service_client_ref().get(OBJ_ENTRY_PATH OBJ_PATH_SEP + std::string("data"));
-        for (auto& reply_future:res.get()){
-            auto data_obj = reply_future.second.get();
-            hashes += hash_blob(data_obj.blob.bytes,data_obj.blob.size);
+        int num_parts = get_config_int(typed_ctxt->get_service_client_ref(),std::string(OBJ_CONFIG_NUM_DATA_PARTS));
+        for(int i=0;i<num_parts;i++){
+            std::string data_key = OBJ_ENTRY_PATH OBJ_PATH_SEP "data_" + std::to_string(i);
+            auto res = typed_ctxt->get_service_client_ref().get(data_key);
+            for (auto& reply_future:res.get()){
+                auto data_obj = reply_future.second.get();
+                hashes += hash_blob(data_obj.blob.bytes,data_obj.blob.size);
+            }
         }
         int category = hashes % NUM_CATEGORIES;
 

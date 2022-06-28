@@ -12,7 +12,7 @@ namespace cascade{
 #define UDL_UUID "b45678de-7a88-4afa-b571-6c87a2f30b01"
 #define UDL_DESC "Notify the client that the pipeline is finished."
 
-void notify_client(const char* ip_address,int* values){
+void notify_client(const char* ip_address,int* values,int client_id){
     struct sockaddr_in servaddr;
 
     // create socket
@@ -21,7 +21,7 @@ void notify_client(const char* ip_address,int* values){
     // server addr
     memset(&servaddr, 0, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
-    servaddr.sin_port = htons(CLIENT_RETURN_UDP_PORT);
+    servaddr.sin_port = htons(CLIENT_RETURN_UDP_PORT + client_id);
     servaddr.sin_addr.s_addr = inet_addr(ip_address);
 
     const char* buffer = (const char *)values;
@@ -40,18 +40,26 @@ class ReturnObserver: public OffCriticalDataPathObserver {
                               ICascadeContext* ctxt,
                               uint32_t worker_id) override {
 
-        // extract category and id
+        // extract category, object_id and client_id
         int values[2];
         std::string key_values = key_string.substr(prefix_length);
         std::string::size_type pos = key_values.find(OBJ_PATH_SEP);
-        values[0] = std::stoi(key_values.substr(pos+1));
+        std::string obj_id = key_values.substr(pos+1);
         values[1] = std::stoi(key_values.substr(0,pos));
 
-        std::cout << "[RETURN] received: " << key_string << " | category: " << values[1] << " | id: " << values[0] <<  std::endl;
+        pos = obj_id.find("_");
+        std::string client_id = obj_id.substr(0,pos);
+        values[0] = std::stoi(obj_id.substr(pos+1));
+        
+        std::cout << "[RETURN] received: " << key_string << " | category: " << values[1] << " | id: " << values[0] << " | client_id: " << client_id << std::endl;
 
         // send UDP packet
-        std::cout << "[RETURN] notifying client: " << CLIENT_IP_ADDR << std::endl;
-        notify_client(CLIENT_IP_ADDR,values);
+        auto* typed_ctxt = dynamic_cast<DefaultCascadeContextType*>(ctxt);
+        std::string config_key = OBJ_CONFIG_CLIENT_DATA + client_id;
+        char* client_ip = get_config_str(typed_ctxt->get_service_client_ref(),config_key);
+
+        std::cout << "[RETURN] notifying client: " << client_ip << std::endl;
+        notify_client(client_ip,values,std::stoi(client_id));
     }
 
     static std::shared_ptr<OffCriticalDataPathObserver> ocdpo_ptr;

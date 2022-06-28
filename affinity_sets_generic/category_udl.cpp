@@ -32,10 +32,14 @@ class CategoryObserver: public OffCriticalDataPathObserver {
         auto result = hash_blob(value->blob.bytes,value->blob.size);
 
         // get data and compute result
-        auto res = typed_ctxt->get_service_client_ref().get(OBJ_DATA_CATEGORY_PATH OBJ_PATH_SEP + category);
-        for (auto& reply_future:res.get()){
-            auto data_obj = reply_future.second.get();
-            result += hash_blob(data_obj.blob.bytes,data_obj.blob.size);
+        int num_parts = get_config_int(typed_ctxt->get_service_client_ref(),std::string(OBJ_CONFIG_NUM_DATA_PARTS));
+        for(int i=0;i<num_parts;i++){
+            std::string data_key = OBJ_DATA_CATEGORY_PATH OBJ_PATH_SEP + category + OBJ_PATH_SEP + std::to_string(i);
+            auto res = typed_ctxt->get_service_client_ref().get(data_key);
+            for (auto& reply_future:res.get()){
+                auto data_obj = reply_future.second.get();
+                result += hash_blob(data_obj.blob.bytes,data_obj.blob.size);
+            }
         }
 
         // put result

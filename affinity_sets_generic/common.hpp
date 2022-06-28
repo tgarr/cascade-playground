@@ -35,12 +35,10 @@ using namespace derecho::cascade;
 
 #define ENTRY_AFFINITY_KEY "entry"
 
-#define CLIENT_IP_ADDR "127.0.0.1"
 #define CLIENT_RETURN_UDP_PORT 43259
 #define CLIENT_RETURN_TIMEOUT 5
 #define RETURN_MESSAGE_SIZE sizeof(int)*2
 
-#define CLIENT_ID 0
 #define CLIENT_SEED 3
 
 static std::mt19937 cascade_client_rng(CLIENT_SEED);
@@ -70,7 +68,9 @@ const std::string affinity_logic(const std::string & key){
         }
         // data
         else if(key2.find(OBJ_DATA_CATEGORY_KEY) == 0 && key2.size() > sizeof(OBJ_DATA_CATEGORY_KEY)){
-            affinity_key = key2.substr(sizeof(OBJ_DATA_CATEGORY_KEY));
+            std::string key3 = key2.substr(sizeof(OBJ_DATA_CATEGORY_KEY));
+            std::string::size_type pos = key3.find(OBJ_PATH_SEP);
+            if(pos != std::string::npos) affinity_key = key3.substr(0,pos);
         }
     
         if(affinity_key.size() == 0) affinity_key = key;
@@ -82,6 +82,10 @@ const std::string affinity_logic(const std::string & key){
 /*const std::string affinity_logic(const std::string & key){
     return key;
 }*/
+
+void set_client_seed(int seed){
+    cascade_client_rng.seed(seed);
+}
 
 char * random_buffer(int size){
     char *buffer = new char[size];
@@ -124,6 +128,46 @@ std::chrono::high_resolution_clock::time_point put_random_object(ServiceClientAP
 
 std::size_t hash_blob(const uint8_t* bytes, std::size_t size){
     return std::_Hash_bytes(bytes,size,0);
+}
+
+void put_config_object(ServiceClientAPI& capi,std::string key,int value){
+    ObjectWithStringKey obj;
+    obj.key = key;
+    obj.previous_version = INVALID_VERSION;
+    obj.previous_version_by_key = INVALID_VERSION;
+    obj.blob = Blob(reinterpret_cast<const uint8_t*>(&value),sizeof(value));
+    put_object(capi,obj);
+}
+
+void put_config_object(ServiceClientAPI& capi,std::string key,char* value){
+    ObjectWithStringKey obj;
+    obj.key = key;
+    obj.previous_version = INVALID_VERSION;
+    obj.previous_version_by_key = INVALID_VERSION;
+    obj.blob = Blob(reinterpret_cast<const uint8_t*>(value),std::strlen(value)+1);
+    put_object(capi,obj);
+}
+
+int get_config_int(ServiceClientAPI& capi,std::string key){
+    auto res = capi.get(key);
+    for (auto& reply_future:res.get()){
+        auto obj = reply_future.second.get();
+        return *reinterpret_cast<const int*>(obj.blob.bytes);
+    }
+
+    return -1;
+}
+
+char* get_config_str(ServiceClientAPI& capi,std::string key){
+    char* str;
+    auto res = capi.get(key);
+    for (auto& reply_future:res.get()){
+        auto obj = reply_future.second.get();
+        str = new char[obj.blob.size];
+        memcpy(str,reinterpret_cast<const char*>(obj.blob.bytes),obj.blob.size);
+    }
+
+    return str;
 }
 
 #endif
