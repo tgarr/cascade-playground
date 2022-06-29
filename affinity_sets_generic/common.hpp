@@ -11,7 +11,9 @@
 
 using namespace derecho::cascade;
 
+#ifndef BENCHMARK_TIME
 #define BENCHMARK_TIME 5
+#endif
 
 #ifndef NUM_CATEGORIES
 #define NUM_CATEGORIES 10
@@ -43,6 +45,8 @@ using namespace derecho::cascade;
 
 static std::mt19937 cascade_client_rng(CLIENT_SEED);
 
+
+#ifndef NO_AFFINITY
 // user defined affinity sets
 const std::string affinity_logic(const std::string & key){
     // entry
@@ -78,10 +82,11 @@ const std::string affinity_logic(const std::string & key){
 
     return affinity_key;
 }
-
-/*const std::string affinity_logic(const std::string & key){
+#else
+const std::string affinity_logic(const std::string & key){
     return key;
-}*/
+}
+#endif
 
 void set_client_seed(int seed){
     cascade_client_rng.seed(seed);
