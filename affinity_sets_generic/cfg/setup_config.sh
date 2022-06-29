@@ -73,7 +73,7 @@ while (( i <= NUM_SHARDS + 1 )); do
         let external_port++
     else
         node_ip=$((i+1))
-        sed "s@XXX_LOCAL_IP_XXX@$node_ip@g" $RDMA_TMP > n$i/$DERECHO_CFG
+        sed "s@^local_id = .*@local_id = $i@g" $RDMA_TMP | sed "s@XXX_LOCAL_IP_XXX@$node_ip@g" > n$i/$DERECHO_CFG
     fi
 
     let i++
