@@ -72,8 +72,8 @@ while (( i <= NUM_SHARDS + 1 )); do
         let rdmc_port++
         let external_port++
     else
-        echo
-        # RDMA
+        node_ip=$((i+1))
+        sed "s@XXX_LOCAL_IP_XXX@$node_ip@g" $RDMA_TMP > n$i/$DERECHO_CFG
     fi
 
     let i++
