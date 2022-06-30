@@ -161,7 +161,15 @@ int benchmark(ServiceClientAPI& capi,int object_size,int object_rate,int data_pa
 }
 
 void measurements(int num_objects,int object_size,int object_rate,int data_part_size,int num_data_parts,node_id_t client_id,std::chrono::high_resolution_clock::time_point* send_timestamps,std::chrono::high_resolution_clock::time_point* rcv_timestamps){
-    std::cerr << client_id << " " << object_size << " " << object_rate << " " << data_part_size << " " << num_data_parts << " " << num_objects << std::endl;
+    std::cerr << client_id << " " << object_size << " " << object_rate << " " << data_part_size << " " << num_data_parts << " " << num_objects << " ";
+
+#ifndef NO_AFFINITY
+    std::cout << "affinity";
+#else
+    std::cout << "no_affinity";
+#endif
+
+    std::cout << std::endl;
     for(int i=0;i<num_objects;i++){
         auto exp_time = std::chrono::duration_cast<std::chrono::microseconds>(send_timestamps[i] - send_timestamps[0]);
         auto latency = std::chrono::duration_cast<std::chrono::microseconds>(rcv_timestamps[i] - send_timestamps[i]);
