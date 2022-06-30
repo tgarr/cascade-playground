@@ -6,7 +6,6 @@ CURDIR=`pwd`
 CLIENTBIN=$SCRIPTPATH/pipeline_client
 
 NODE_IP=`hostname -I | cut -d" " -f2`
-sudo modprobe ib_uverbs
 
 cd $SCRIPTPATH/cfg/client
 rm -rf .plog
