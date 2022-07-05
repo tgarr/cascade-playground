@@ -9,7 +9,9 @@ for dpsz in $data_part_size; do
     for ndp in $num_data_parts; do
         for osz in $object_size; do
             for orate in $object_rate; do
-                ./cloudlab-client.sh $osz $orate $dpsz $ndp
+                if ! grep -q " $osz $orate $dpsz $ndp " client.results; then
+                    ./cloudlab-client.sh $osz $orate $dpsz $ndp
+                fi
             done
         done
     done
