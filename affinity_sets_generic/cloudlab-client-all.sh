@@ -11,6 +11,7 @@ for dpsz in $data_part_size; do
             for orate in $object_rate; do
                 if ! grep -q " $osz $orate $dpsz $ndp " client.results; then
                     ./cloudlab-client.sh $osz $orate $dpsz $ndp
+                    sleep 2
                 fi
             done
         done
