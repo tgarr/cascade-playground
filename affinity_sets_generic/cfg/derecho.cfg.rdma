@@ -200,9 +200,9 @@ json_layout_file = 'layout.json'
 
 # cascade service configuration
 [CASCADE]
-cpu_cores = 0-7
+cpu_cores = 0-9
 num_workers_for_multicast_ocdp = 4
-num_workers_for_p2p_ocdp = 4
+num_workers_for_p2p_ocdp = 6
 worker_cpu_affinity = '
 {
   "multicast_ocdp" : {
@@ -216,6 +216,8 @@ worker_cpu_affinity = '
     "1":"5",
     "2":"6",
     "3":"7"
+    "4":"8"
+    "5":"9"
   }
 }
 '
