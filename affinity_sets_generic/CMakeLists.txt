@@ -51,7 +51,7 @@ if(NOT DEFINED NUM_SHARDS)
 endif(NOT DEFINED NUM_SHARDS)
 
 if(NOT DEFINED RUN_MODE)
-    set(RUN_MODE "local")
+    set(RUN_MODE local)
 endif(NOT DEFINED RUN_MODE)
 
 target_compile_definitions(pipeline_client PRIVATE NUM_SHARDS=${NUM_SHARDS})
@@ -59,10 +59,10 @@ target_compile_definitions(entry_udl PRIVATE NUM_SHARDS=${NUM_SHARDS})
 target_compile_definitions(category_udl PRIVATE NUM_SHARDS=${NUM_SHARDS})
 target_compile_definitions(return_udl PRIVATE NUM_SHARDS=${NUM_SHARDS})
 
-target_compile_definitions(pipeline_client PRIVATE RUN_MODE=${RUN_MODE})
-target_compile_definitions(entry_udl PRIVATE RUN_MODE=${RUN_MODE})
-target_compile_definitions(category_udl PRIVATE RUN_MODE=${RUN_MODE})
-target_compile_definitions(return_udl PRIVATE RUN_MODE=${RUN_MODE})
+target_compile_definitions(pipeline_client PRIVATE RUN_MODE="${RUN_MODE}")
+target_compile_definitions(entry_udl PRIVATE RUN_MODE="${RUN_MODE}")
+target_compile_definitions(category_udl PRIVATE RUN_MODE="${RUN_MODE}")
+target_compile_definitions(return_udl PRIVATE RUN_MODE="${RUN_MODE}")
 
 if(DEFINED NUM_CATEGORIES)
     target_compile_definitions(pipeline_client PRIVATE NUM_CATEGORIES=${NUM_CATEGORIES})
