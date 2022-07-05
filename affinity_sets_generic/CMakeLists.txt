@@ -92,6 +92,7 @@ add_custom_command(TARGET pipeline_client POST_BUILD
     COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/run_servers.sh ${CMAKE_CURRENT_BINARY_DIR}/
     COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/run_client.sh ${CMAKE_CURRENT_BINARY_DIR}/
     COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-client.sh ${CMAKE_CURRENT_BINARY_DIR}/
+    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-client-all.sh ${CMAKE_CURRENT_BINARY_DIR}/
     COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-server.sh ${CMAKE_CURRENT_BINARY_DIR}/
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cfg/setup_config.sh
             ${CMAKE_CURRENT_SOURCE_DIR}/cfg/layout.json.tmp
@@ -101,6 +102,7 @@ add_custom_command(TARGET pipeline_client POST_BUILD
             ${CMAKE_CURRENT_SOURCE_DIR}/run_servers.sh
             ${CMAKE_CURRENT_SOURCE_DIR}/run_client.sh
             ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-client.sh
+            ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-client-all.sh
             ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-server.sh
 )
 

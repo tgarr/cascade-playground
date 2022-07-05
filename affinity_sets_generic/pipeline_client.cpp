@@ -113,7 +113,6 @@ node_id_t setup(ServiceClientAPI& capi,int object_size,int object_rate,int data_
     for(int i=num_data_parts-parts_to_put;i<num_data_parts;i++){
         std::string data_key = OBJ_ENTRY_PATH OBJ_PATH_SEP "data_" + std::to_string(i);
         put_random_object(capi,data_key,data_part_size);
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
 
     // categories data
@@ -121,7 +120,6 @@ node_id_t setup(ServiceClientAPI& capi,int object_size,int object_rate,int data_
         for(int i=num_data_parts-parts_to_put;i<num_data_parts;i++){
             std::string data_key = OBJ_DATA_CATEGORY_PATH OBJ_PATH_SEP + std::to_string(c) + OBJ_PATH_SEP + std::to_string(i);
             put_random_object(capi,data_key,data_part_size);
-            std::this_thread::sleep_for(std::chrono::milliseconds(200));
         }
     }
     std::cout << "done" << std::endl;
@@ -130,6 +128,8 @@ node_id_t setup(ServiceClientAPI& capi,int object_size,int object_rate,int data_
     int num_expected_objects = BENCHMARK_TIME * object_rate * 1.1;
     *send_timestamps = new std::chrono::high_resolution_clock::time_point[num_expected_objects];
     *rcv_timestamps = new std::chrono::high_resolution_clock::time_point[num_expected_objects];
+    
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 
     return client_id;
 }
