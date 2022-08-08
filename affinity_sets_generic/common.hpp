@@ -46,7 +46,11 @@ using namespace derecho::cascade;
 static std::mt19937 cascade_client_rng(CLIENT_SEED);
 
 
-#ifndef NO_AFFINITY
+#if AFFINITY_LOGIC == 0
+const std::string affinity_logic(const std::string & key){
+    return key;
+}
+#elif AFFINITY_LOGIC == 1
 // user defined affinity sets
 const std::string affinity_logic(const std::string & key){
     // entry
@@ -82,9 +86,40 @@ const std::string affinity_logic(const std::string & key){
 
     return affinity_key;
 }
-#else
+#elif AFFINITY_LOGIC == 2
 const std::string affinity_logic(const std::string & key){
-    return key;
+    // entry
+    if(key.find(OBJ_ENTRY_PATH) == 0) return key;
+
+    std::string affinity_key = key;
+
+    // category
+    if(key.find(OBJ_CATEGORY_PATH) == 0 && key.size() > sizeof(OBJ_CATEGORY_PATH)){
+        std::string key2 = key.substr(sizeof(OBJ_CATEGORY_PATH)-1);
+
+        // new
+        if(key2.find(OBJ_NEW_CATEGORY_KEY) == 0 && key2.size() > sizeof(OBJ_NEW_CATEGORY_KEY)){
+            std::string key3 = key2.substr(sizeof(OBJ_NEW_CATEGORY_KEY));
+            std::string::size_type pos = key3.find(OBJ_PATH_SEP);
+            if(pos != std::string::npos) affinity_key = key3.substr(0,pos);
+        }
+        // output
+        else if(key2.find(OBJ_OUTPUT_CATEGORY_KEY) == 0 && key2.size() > sizeof(OBJ_OUTPUT_CATEGORY_KEY)){
+            std::string key3 = key2.substr(sizeof(OBJ_OUTPUT_CATEGORY_KEY));
+            std::string::size_type pos = key3.find(OBJ_PATH_SEP);
+            if(pos != std::string::npos) affinity_key = key3.substr(0,pos);
+        }
+        // data
+        else if(key2.find(OBJ_DATA_CATEGORY_KEY) == 0 && key2.size() > sizeof(OBJ_DATA_CATEGORY_KEY)){
+            std::string key3 = key2.substr(sizeof(OBJ_DATA_CATEGORY_KEY));
+            std::string::size_type pos = key3.find(OBJ_PATH_SEP);
+            if(pos != std::string::npos) affinity_key = key3.substr(0,pos);
+        }
+    
+        if(affinity_key.size() == 0) affinity_key = key;
+    }
+
+    return affinity_key;
 }
 #endif
 

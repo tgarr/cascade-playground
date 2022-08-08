@@ -78,12 +78,12 @@ if(DEFINED BENCHMARK_TIME)
     target_compile_definitions(return_udl PRIVATE BENCHMARK_TIME=${BENCHMARK_TIME})
 endif(DEFINED BENCHMARK_TIME)
 
-if(DEFINED NO_AFFINITY)
-    target_compile_definitions(pipeline_client PRIVATE NO_AFFINITY=${NO_AFFINITY})
-    target_compile_definitions(entry_udl PRIVATE NO_AFFINITY=${NO_AFFINITY})
-    target_compile_definitions(category_udl PRIVATE NO_AFFINITY=${NO_AFFINITY})
-    target_compile_definitions(return_udl PRIVATE NO_AFFINITY=${NO_AFFINITY})
-endif(DEFINED NO_AFFINITY)
+if(DEFINED AFFINITY_LOGIC)
+    target_compile_definitions(pipeline_client PRIVATE AFFINITY_LOGIC=${AFFINITY_LOGIC})
+    target_compile_definitions(entry_udl PRIVATE AFFINITY_LOGIC=${AFFINITY_LOGIC})
+    target_compile_definitions(category_udl PRIVATE AFFINITY_LOGIC=${AFFINITY_LOGIC})
+    target_compile_definitions(return_udl PRIVATE AFFINITY_LOGIC=${AFFINITY_LOGIC})
+endif(DEFINED AFFINITY_LOGIC)
 
 add_custom_command(TARGET pipeline_client POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/cfg
