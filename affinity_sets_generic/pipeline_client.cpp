@@ -190,7 +190,7 @@ int main(int argc, char** argv) {
     // timestamps
     std::chrono::high_resolution_clock::time_point* send_timestamps;
     std::chrono::high_resolution_clock::time_point* rcv_timestamps;
-    int* obj_cat,obj_node_id;
+    int *obj_cat,*obj_node_id;
 
     // connect to service
     std::cout << "Connecting to Cascade ... "; fflush(stdout);
