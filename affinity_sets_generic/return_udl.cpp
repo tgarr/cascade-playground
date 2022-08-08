@@ -25,7 +25,7 @@ void notify_client(const char* ip_address,int* values,int client_id){
     servaddr.sin_addr.s_addr = inet_addr(ip_address);
 
     const char* buffer = (const char *)values;
-    sendto(sockfd,buffer,sizeof(buffer),MSG_CONFIRM,(const struct sockaddr *) &servaddr,sizeof(servaddr));
+    sendto(sockfd,buffer,RETURN_MESSAGE_SIZE,MSG_CONFIRM,(const struct sockaddr *) &servaddr,sizeof(servaddr));
 
     close(sockfd);
 }
