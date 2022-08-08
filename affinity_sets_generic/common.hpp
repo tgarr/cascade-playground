@@ -42,9 +42,9 @@ using namespace derecho::cascade;
 #define RETURN_MESSAGE_SIZE sizeof(int)*3
 
 #define CLIENT_SEED 3
+#define RANDOM_BUFFER_CHUNK 100
 
 static std::mt19937 cascade_client_rng(CLIENT_SEED);
-
 
 #if AFFINITY_LOGIC == 0
 const std::string affinity_logic(const std::string & key){
@@ -129,7 +129,16 @@ void set_client_seed(int seed){
 
 char * random_buffer(int size){
     char *buffer = new char[size];
-    memset(buffer,cascade_client_rng() % 256,size);
+
+    int already_set = 0;
+    while((already_set+RANDOM_BUFFER_CHUNK) <= size){
+        memset(buffer+already_set,cascade_client_rng() % 256,RANDOM_BUFFER_CHUNK);
+        already_set += RANDOM_BUFFER_CHUNK;
+    }
+
+    int remaining = size - already_set;
+    if(remaining > 0) memset(buffer+already_set,cascade_client_rng() % 256,remaining);
+
     return buffer;
 }
 
