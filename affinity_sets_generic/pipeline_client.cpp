@@ -24,7 +24,7 @@ inline void cpu_affinity(int core_id){
     pthread_setaffinity_np(thread,sizeof(cpu_set_t),&cpuset);
 }
 
-void listen_notifications(std::chrono::high_resolution_clock::time_point* rcv_timestamps,std::atomic<bool>* stop_listen,node_id_t client_id,char* client_ip,int* obj_cat){
+void listen_notifications(std::chrono::high_resolution_clock::time_point* rcv_timestamps,std::atomic<bool>* stop_listen,node_id_t client_id,char* client_ip,int* obj_cat,int* obj_node_id){
     char buffer[RETURN_MESSAGE_SIZE];
     struct sockaddr_in servaddr,cliaddr;
     
@@ -58,6 +58,7 @@ void listen_notifications(std::chrono::high_resolution_clock::time_point* rcv_ti
             auto now = std::chrono::high_resolution_clock::now();
             int* values = reinterpret_cast<int*>(buffer);
             obj_cat[values[0]] = values[1];
+            obj_node_id[values[0]] = values[2];
             rcv_timestamps[values[0]] = now;
             //std::cout << "[RETURN] finished for id: " << values[0] << " | category: " << values[1] << std::endl;
         }
@@ -66,7 +67,7 @@ void listen_notifications(std::chrono::high_resolution_clock::time_point* rcv_ti
     close(sockfd);
 }
 
-node_id_t setup(ServiceClientAPI& capi,int object_size,int object_rate,int data_part_size,int num_data_parts,char* client_ip,std::chrono::high_resolution_clock::time_point** send_timestamps,std::chrono::high_resolution_clock::time_point** rcv_timestamps,int** obj_cat){
+node_id_t setup(ServiceClientAPI& capi,int object_size,int object_rate,int data_part_size,int num_data_parts,char* client_ip,std::chrono::high_resolution_clock::time_point** send_timestamps,std::chrono::high_resolution_clock::time_point** rcv_timestamps,int** obj_cat,int** obj_node_id){
     // affinity sets mapping function
     capi.set_affinity_set_logic(affinity_logic);
 
@@ -130,6 +131,7 @@ node_id_t setup(ServiceClientAPI& capi,int object_size,int object_rate,int data_
     *send_timestamps = new std::chrono::high_resolution_clock::time_point[num_expected_objects];
     *rcv_timestamps = new std::chrono::high_resolution_clock::time_point[num_expected_objects];
     *obj_cat = new int[num_expected_objects];
+    *obj_node_id = new int[num_expected_objects];
     
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -164,19 +166,14 @@ int benchmark(ServiceClientAPI& capi,int object_size,int object_rate,int data_pa
     return object_id;
 }
 
-void measurements(int num_objects,int object_size,int object_rate,int data_part_size,int num_data_parts,node_id_t client_id,std::chrono::high_resolution_clock::time_point* send_timestamps,std::chrono::high_resolution_clock::time_point* rcv_timestamps,int* obj_cat){
-    std::cerr << client_id << " " << object_size << " " << object_rate << " " << data_part_size << " " << num_data_parts << " " << num_objects << " ";
-#ifndef NO_AFFINITY
-    std::cerr << "affinity";
-#else
-    std::cerr << "no_affinity";
-#endif
+void measurements(int num_objects,int object_size,int object_rate,int data_part_size,int num_data_parts,node_id_t client_id,std::chrono::high_resolution_clock::time_point* send_timestamps,std::chrono::high_resolution_clock::time_point* rcv_timestamps,int* obj_cat,int* obj_node_id){
+    std::cerr << client_id << " " << object_size << " " << object_rate << " " << data_part_size << " " << num_data_parts << " " << num_objects << " " << AFFINITY_LOGIC;
     std::cerr << " " << NUM_SHARDS << " " << NUM_CATEGORIES << " " << BENCHMARK_TIME << " " << RUN_MODE << std::endl;
 
     for(int i=0;i<num_objects;i++){
         auto exp_time = std::chrono::duration_cast<std::chrono::microseconds>(send_timestamps[i] - send_timestamps[0]);
         auto latency = std::chrono::duration_cast<std::chrono::microseconds>(rcv_timestamps[i] - send_timestamps[i]);
-        std::cerr << i << " " << latency.count() << " " << exp_time.count() << " " << obj_cat[i] << std::endl;
+        std::cerr << i << " " << latency.count() << " " << exp_time.count() << " " << obj_cat[i] << " " << obj_node_id[i] << std::endl;
     }
 }
 
@@ -193,7 +190,7 @@ int main(int argc, char** argv) {
     // timestamps
     std::chrono::high_resolution_clock::time_point* send_timestamps;
     std::chrono::high_resolution_clock::time_point* rcv_timestamps;
-    int* obj_cat;
+    int* obj_cat,obj_node_id;
 
     // connect to service
     std::cout << "Connecting to Cascade ... "; fflush(stdout);
@@ -201,12 +198,12 @@ int main(int argc, char** argv) {
     std::cout << "done" << std::endl;
 
     // setup benchmark: object pools, data, measurement data structures
-    node_id_t client_id = setup(capi,object_size,object_rate,data_part_size,num_data_parts,client_ip,&send_timestamps,&rcv_timestamps,&obj_cat);
+    node_id_t client_id = setup(capi,object_size,object_rate,data_part_size,num_data_parts,client_ip,&send_timestamps,&rcv_timestamps,&obj_cat,&obj_node_id);
 
     // listen for UDP notifications
     std::cout << "Starting to listen UDP notifications ... "; fflush(stdout);
     std::atomic<bool> stop_listen(false);
-    std::thread listener(listen_notifications,rcv_timestamps,&stop_listen,client_id,client_ip,obj_cat); 
+    std::thread listener(listen_notifications,rcv_timestamps,&stop_listen,client_id,client_ip,obj_cat,obj_node_id); 
     std::cout << "done" << std::endl;
    
     // run benchmark 
@@ -216,7 +213,7 @@ int main(int argc, char** argv) {
     listener.join();
     
     // measurements
-    measurements(num_objects,object_size,object_rate,data_part_size,num_data_parts,client_id,send_timestamps,rcv_timestamps,obj_cat);
+    measurements(num_objects,object_size,object_rate,data_part_size,num_data_parts,client_id,send_timestamps,rcv_timestamps,obj_cat,obj_node_id);
 
     return 0;
 }

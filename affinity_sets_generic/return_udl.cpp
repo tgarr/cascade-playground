@@ -40,8 +40,12 @@ class ReturnObserver: public OffCriticalDataPathObserver {
                               ICascadeContext* ctxt,
                               uint32_t worker_id) override {
 
+        auto* typed_ctxt = dynamic_cast<DefaultCascadeContextType*>(ctxt);
+        
         // extract category, object_id and client_id
-        int values[2];
+        int values[3];
+        values[2] = typed_ctxt->get_service_client_ref().get_my_id();
+
         std::string key_values = key_string.substr(prefix_length);
         std::string::size_type pos = key_values.find(OBJ_PATH_SEP);
         std::string obj_id = key_values.substr(pos+1);
@@ -54,7 +58,6 @@ class ReturnObserver: public OffCriticalDataPathObserver {
         // std::cout << "[RETURN] received: " << key_string << " | category: " << values[1] << " | id: " << values[0] << " | client_id: " << client_id << std::endl;
 
         // send UDP packet
-        auto* typed_ctxt = dynamic_cast<DefaultCascadeContextType*>(ctxt);
         std::string config_key = OBJ_CONFIG_CLIENT_DATA + client_id;
         char* client_ip = get_config_str(typed_ctxt->get_service_client_ref(),config_key);
 

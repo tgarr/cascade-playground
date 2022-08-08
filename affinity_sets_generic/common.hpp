@@ -39,7 +39,7 @@ using namespace derecho::cascade;
 
 #define CLIENT_RETURN_UDP_PORT 43259
 #define CLIENT_RETURN_TIMEOUT BENCHMARK_TIME
-#define RETURN_MESSAGE_SIZE sizeof(int)*2
+#define RETURN_MESSAGE_SIZE sizeof(int)*3
 
 #define CLIENT_SEED 3
 
