@@ -25,7 +25,7 @@ void notify_client(const char* ip_address,int* values,int client_id){
     servaddr.sin_addr.s_addr = inet_addr(ip_address);
 
     const char* buffer = (const char *)values;
-    sendto(sockfd,buffer,sizeof(values),MSG_CONFIRM,(const struct sockaddr *) &servaddr,sizeof(servaddr));
+    sendto(sockfd,buffer,sizeof(buffer),MSG_CONFIRM,(const struct sockaddr *) &servaddr,sizeof(servaddr));
 
     close(sockfd);
 }
@@ -44,7 +44,7 @@ class ReturnObserver: public OffCriticalDataPathObserver {
         
         // extract category, object_id and client_id
         int values[3];
-        values[2] = typed_ctxt->get_service_client_ref().get_my_id();
+        values[2] = (int)typed_ctxt->get_service_client_ref().get_my_id();
 
         std::string key_values = key_string.substr(prefix_length);
         std::string::size_type pos = key_values.find(OBJ_PATH_SEP);
