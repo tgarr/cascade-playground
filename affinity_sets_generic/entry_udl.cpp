@@ -1,5 +1,6 @@
 #include <cascade/user_defined_logic_interface.hpp>
 #include <iostream>
+#include <vector>
 #include "common.hpp"
 
 namespace derecho{
@@ -29,10 +30,17 @@ class EntryObserver: public OffCriticalDataPathObserver {
 
         // get data
         int num_parts = get_config_int(typed_ctxt->get_service_client_ref(),std::string(OBJ_CONFIG_NUM_DATA_PARTS));
+        std::vector<derecho::rpc::QueryResults<const derecho::cascade::ObjectWithStringKey>> res;
+
+        // send gets
         for(int i=0;i<num_parts;i++){
             std::string data_key = OBJ_ENTRY_PATH OBJ_PATH_SEP "data_" + std::to_string(i);
-            auto res = typed_ctxt->get_service_client_ref().get(data_key);
-            for (auto& reply_future:res.get()){
+            res.push_back(typed_ctxt->get_service_client_ref().get(data_key));
+        }
+
+        // get objects
+        for(int i=0;i<num_parts;i++){
+            for (auto& reply_future:res[i].get()){
                 auto data_obj = reply_future.second.get();
                 hashes += hash_blob(data_obj.blob.bytes,data_obj.blob.size);
             }
