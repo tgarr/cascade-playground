@@ -11,8 +11,8 @@
 #include "common.hpp"
 
 bool usage(int argc, char** argv){
-    if(argc >= 6) return true;
-    std::cout << argv[0] << " <object_size> <object_rate> <data_part_size> <num_data_parts> <client_ip_address>" << std::endl;
+    if(argc >= 8) return true;
+    std::cout << argv[0] << " <object_size> <object_rate> <entry_part_size> <num_entry_parts> <data_part_size> <num_data_parts> <client_ip_address> [seed]" << std::endl;
     return false;
 }
 
@@ -67,7 +67,7 @@ void listen_notifications(std::chrono::high_resolution_clock::time_point* rcv_ti
     close(sockfd);
 }
 
-node_id_t setup(ServiceClientAPI& capi,int object_size,int object_rate,int data_part_size,int num_data_parts,char* client_ip,std::chrono::high_resolution_clock::time_point** send_timestamps,std::chrono::high_resolution_clock::time_point** rcv_timestamps,int** obj_cat,int** obj_node_id){
+node_id_t setup(ServiceClientAPI& capi,int object_size,int object_rate,int entry_part_size,int num_entry_parts,int data_part_size,int num_data_parts,char* client_ip,std::chrono::high_resolution_clock::time_point** send_timestamps,std::chrono::high_resolution_clock::time_point** rcv_timestamps,int** obj_cat,int** obj_node_id){
     // affinity sets mapping function
     capi.set_affinity_set_logic(affinity_logic);
 
@@ -88,15 +88,31 @@ node_id_t setup(ServiceClientAPI& capi,int object_size,int object_rate,int data_
     // getting/putting config to decide what to do
     std::cout << "Getting/putting config ... "; fflush(stdout);
     node_id_t client_id = capi.get_my_id();
-    set_client_seed(CLIENT_SEED+client_id);
 
     int parts_to_put = num_data_parts;
+    int entry_parts_to_put = num_entry_parts;
     auto res = capi.list_keys(CURRENT_VERSION,true,OBJ_CONFIG_PATH);
     if(capi.wait_list_keys(res).empty()){
+        put_config_object(capi,std::string(OBJ_CONFIG_ENTRY_PART_SIZE),entry_part_size);
+        put_config_object(capi,std::string(OBJ_CONFIG_NUM_ENTRY_PARTS),num_entry_parts);
         put_config_object(capi,std::string(OBJ_CONFIG_DATA_PART_SIZE),data_part_size);
         put_config_object(capi,std::string(OBJ_CONFIG_NUM_DATA_PARTS),num_data_parts);
     }
     else {
+        // entry
+        if(get_config_int(capi,std::string(OBJ_CONFIG_ENTRY_PART_SIZE)) == entry_part_size){
+            int config_num_parts = get_config_int(capi,std::string(OBJ_CONFIG_NUM_ENTRY_PARTS));
+            if(config_num_parts < num_entry_parts){
+                put_config_object(capi,std::string(OBJ_CONFIG_NUM_ENTRY_PARTS),num_entry_parts);
+                entry_parts_to_put -= config_num_parts;
+            }
+            else entry_parts_to_put = 0;
+        }
+        else {
+            put_config_object(capi,std::string(OBJ_CONFIG_ENTRY_PART_SIZE),entry_part_size);
+        }
+
+        // data
         if(get_config_int(capi,std::string(OBJ_CONFIG_DATA_PART_SIZE)) == data_part_size){
             int config_num_parts = get_config_int(capi,std::string(OBJ_CONFIG_NUM_DATA_PARTS));
             if(config_num_parts < num_data_parts){
@@ -105,6 +121,9 @@ node_id_t setup(ServiceClientAPI& capi,int object_size,int object_rate,int data_
             }
             else parts_to_put = 0;
         }
+        else {
+            put_config_object(capi,std::string(OBJ_CONFIG_DATA_PART_SIZE),data_part_size);
+        }
     }
     put_config_object(capi,std::string(OBJ_CONFIG_CLIENT_DATA) + std::to_string(client_id),client_ip);
     std::cout << "done" << std::endl;
@@ -112,9 +131,9 @@ node_id_t setup(ServiceClientAPI& capi,int object_size,int object_rate,int data_
     std::cout << "Putting data objects ... "; fflush(stdout);
 
     // entry data
-    for(int i=num_data_parts-parts_to_put;i<num_data_parts;i++){
+    for(int i=num_entry_parts-entry_parts_to_put;i<num_entry_parts;i++){
         std::string data_key = OBJ_ENTRY_PATH OBJ_PATH_SEP "data_" + std::to_string(i);
-        put_random_object(capi,data_key,data_part_size);
+        put_random_object(capi,data_key,entry_part_size);
     }
 
     // categories data
@@ -138,7 +157,7 @@ node_id_t setup(ServiceClientAPI& capi,int object_size,int object_rate,int data_
     return client_id;
 }
 
-int benchmark(ServiceClientAPI& capi,int object_size,int object_rate,int data_part_size,int num_data_parts,node_id_t client_id,std::chrono::high_resolution_clock::time_point* send_timestamps){
+int benchmark(ServiceClientAPI& capi,int object_size,int object_rate,node_id_t client_id,std::chrono::high_resolution_clock::time_point* send_timestamps){
     std::cout << "Starting benchmark ..." << std::endl;
 
     auto period = std::chrono::nanoseconds(1000000000) / object_rate;
@@ -166,8 +185,9 @@ int benchmark(ServiceClientAPI& capi,int object_size,int object_rate,int data_pa
     return object_id;
 }
 
-void measurements(int num_objects,int object_size,int object_rate,int data_part_size,int num_data_parts,node_id_t client_id,std::chrono::high_resolution_clock::time_point* send_timestamps,std::chrono::high_resolution_clock::time_point* rcv_timestamps,int* obj_cat,int* obj_node_id){
-    std::cerr << client_id << " " << object_size << " " << object_rate << " " << data_part_size << " " << num_data_parts << " " << num_objects << " " << AFFINITY_LOGIC;
+void measurements(int num_objects,int object_size,int object_rate,int entry_part_size,int num_entry_parts,int data_part_size,int num_data_parts,node_id_t client_id,std::chrono::high_resolution_clock::time_point* send_timestamps,std::chrono::high_resolution_clock::time_point* rcv_timestamps,int* obj_cat,int* obj_node_id){
+    std::cerr << client_id << " " << object_size << " " << object_rate << " " << entry_part_size << " " << num_entry_parts << " ";
+    std::cerr << data_part_size << " " << num_data_parts << " " << num_objects << " " << AFFINITY_LOGIC;
     std::cerr << " " << NUM_SHARDS << " " << NUM_CATEGORIES << " " << BENCHMARK_TIME << " " << RUN_MODE << std::endl;
 
     for(int i=0;i<num_objects;i++){
@@ -183,9 +203,13 @@ int main(int argc, char** argv) {
     // benchmark parameters: <object_size> <object_rate> <data_part_size> <num_data_parts> <client_ip_address>   
     int object_size = std::stoi(argv[1]);
     int object_rate = std::stoi(argv[2]);
-    int data_part_size = std::stoi(argv[3]);
-    int num_data_parts = std::stoi(argv[4]);
-    char * client_ip = argv[5];
+    int entry_part_size = std::stoi(argv[3]);
+    int num_entry_parts = std::stoi(argv[4]);
+    int data_part_size = std::stoi(argv[5]);
+    int num_data_parts = std::stoi(argv[6]);
+    char * client_ip = argv[7];
+    
+    if(argc >= 9) set_client_seed(std::stoi(argv[8]));
 
     // timestamps
     std::chrono::high_resolution_clock::time_point* send_timestamps;
@@ -198,7 +222,7 @@ int main(int argc, char** argv) {
     std::cout << "done" << std::endl;
 
     // setup benchmark: object pools, data, measurement data structures
-    node_id_t client_id = setup(capi,object_size,object_rate,data_part_size,num_data_parts,client_ip,&send_timestamps,&rcv_timestamps,&obj_cat,&obj_node_id);
+    node_id_t client_id = setup(capi,object_size,object_rate,entry_part_size,num_entry_parts,data_part_size,num_data_parts,client_ip,&send_timestamps,&rcv_timestamps,&obj_cat,&obj_node_id);
 
     // listen for UDP notifications
     std::cout << "Starting to listen UDP notifications ... "; fflush(stdout);
@@ -207,13 +231,13 @@ int main(int argc, char** argv) {
     std::cout << "done" << std::endl;
    
     // run benchmark 
-    int num_objects = benchmark(capi,object_size,object_rate,data_part_size,num_data_parts,client_id,send_timestamps);
+    int num_objects = benchmark(capi,object_size,object_rate,client_id,send_timestamps);
     std::this_thread::sleep_for(std::chrono::seconds(CLIENT_RETURN_TIMEOUT));
     stop_listen = true;
     listener.join();
     
     // measurements
-    measurements(num_objects,object_size,object_rate,data_part_size,num_data_parts,client_id,send_timestamps,rcv_timestamps,obj_cat,obj_node_id);
+    measurements(num_objects,object_size,object_rate,entry_part_size,num_entry_parts,data_part_size,num_data_parts,client_id,send_timestamps,rcv_timestamps,obj_cat,obj_node_id);
 
     return 0;
 }

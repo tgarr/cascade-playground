@@ -9,7 +9,7 @@ NODE_IP=`hostname -I | cut -d" " -f2`
 
 cd $SCRIPTPATH/cfg/client
 rm -rf .plog
-$CLIENTBIN $@ $NODE_IP 2>> $SCRIPTPATH/client.results | tee $SCRIPTPATH/client.output
+$CLIENTBIN $1 $2 $3 $4 $5 $6 $NODE_IP $7 2>> $SCRIPTPATH/client.results | tee $SCRIPTPATH/client.output
 
 cd $CURDIR
 

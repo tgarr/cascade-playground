@@ -29,7 +29,7 @@ class EntryObserver: public OffCriticalDataPathObserver {
         auto hashes = hash_blob(value->blob.bytes,value->blob.size);
 
         // get data
-        int num_parts = get_config_int(typed_ctxt->get_service_client_ref(),std::string(OBJ_CONFIG_NUM_DATA_PARTS));
+        int num_parts = get_config_int(typed_ctxt->get_service_client_ref(),std::string(OBJ_CONFIG_NUM_ENTRY_PARTS));
         std::vector<derecho::rpc::QueryResults<const derecho::cascade::ObjectWithStringKey>> res;
 
         // send gets
