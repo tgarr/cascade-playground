@@ -146,7 +146,7 @@ node_id_t setup(ServiceClientAPI& capi,int object_size,int object_rate,int entry
     std::cout << "done" << std::endl;
 
     // allocate timestamps arrays
-    int num_expected_objects = BENCHMARK_TIME * object_rate * 1.1;
+    int num_expected_objects = BENCHMARK_TIME;
     *send_timestamps = new std::chrono::high_resolution_clock::time_point[num_expected_objects];
     *rcv_timestamps = new std::chrono::high_resolution_clock::time_point[num_expected_objects];
     *obj_cat = new int[num_expected_objects];
@@ -161,11 +161,8 @@ int benchmark(ServiceClientAPI& capi,int object_size,int object_rate,node_id_t c
     std::cout << "Starting benchmark ..." << std::endl;
 
     auto period = std::chrono::nanoseconds(1000000000) / object_rate;
-    auto stop = std::chrono::seconds(BENCHMARK_TIME);
-    auto acc = std::chrono::nanoseconds(0);
-
     int object_id = 0;
-    while(acc < stop){
+    while(object_id < BENCHMARK_TIME){
         auto start = std::chrono::high_resolution_clock::now();
 
         // put new object
@@ -176,7 +173,6 @@ int benchmark(ServiceClientAPI& capi,int object_size,int object_rate,node_id_t c
         auto elapsed = std::chrono::high_resolution_clock::now() - start;
         if(elapsed < period) std::this_thread::sleep_for(period - elapsed);
 
-        acc += std::chrono::high_resolution_clock::now() - start;
         object_id++;
     }
     
@@ -232,7 +228,7 @@ int main(int argc, char** argv) {
    
     // run benchmark 
     int num_objects = benchmark(capi,object_size,object_rate,client_id,send_timestamps);
-    std::this_thread::sleep_for(std::chrono::seconds(CLIENT_RETURN_TIMEOUT));
+    std::this_thread::sleep_for(std::chrono::seconds(CLIENT_WAIT_BEFORE_END));
     stop_listen = true;
     listener.join();
     

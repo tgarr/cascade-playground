@@ -39,11 +39,19 @@ class EntryObserver: public OffCriticalDataPathObserver {
         }
 
         // get objects
+        const uint8_t* blob_bytes[num_parts];
+        std::size_t blob_size[num_parts];
         for(int i=0;i<num_parts;i++){
             for (auto& reply_future:res[i].get()){
                 auto data_obj = reply_future.second.get();
-                hashes += hash_blob(data_obj.blob.bytes,data_obj.blob.size);
+                blob_bytes[i] = data_obj.blob.bytes;
+                blob_size[i] = data_obj.blob.size;
             }
+        }
+
+        // hash data after getting all objects
+        for(int i=0;i<num_parts;i++){
+            hashes += hash_blob(blob_bytes[i],blob_size[i]);
         }
         int category = hashes % NUM_CATEGORIES;
 

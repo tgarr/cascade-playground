@@ -12,7 +12,7 @@
 using namespace derecho::cascade;
 
 #ifndef BENCHMARK_TIME
-#define BENCHMARK_TIME 5
+#define BENCHMARK_TIME 100
 #endif
 
 #ifndef NUM_CATEGORIES
@@ -40,10 +40,11 @@ using namespace derecho::cascade;
 #define ENTRY_AFFINITY_KEY "entry"
 
 #define CLIENT_RETURN_UDP_PORT 43259
-#define CLIENT_RETURN_TIMEOUT BENCHMARK_TIME
+#define CLIENT_RETURN_TIMEOUT 10
 #define RETURN_MESSAGE_SIZE sizeof(int)*3
+#define CLIENT_WAIT_BEFORE_END 30
 
-#define CLIENT_SEED 3
+#define CLIENT_SEED 49357
 #define RANDOM_BUFFER_CHUNK 100
 
 static std::mt19937 cascade_client_rng(CLIENT_SEED);
