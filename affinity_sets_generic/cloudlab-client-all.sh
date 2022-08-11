@@ -4,9 +4,9 @@ object_size="1000"
 entry_part_size="1000000"
 data_part_size="1000000"
 
-object_rate="10 20 30 40 50 60 70 80 90 100"
-num_entry_parts="1 2 4 6 8 10"
-num_data_parts="10 20 30 40 50"
+object_rate="50"
+num_entry_parts="5"
+num_data_parts="50"
 
 for epsz in $entry_part_size; do
     for nep in $num_entry_parts; do
