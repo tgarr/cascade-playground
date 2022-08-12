@@ -27,32 +27,6 @@ class EntryObserver: public OffCriticalDataPathObserver {
         // find out category
         const auto* const value = dynamic_cast<const ObjectWithStringKey* const>(value_ptr);
         auto hashes = hash_blob(value->blob.bytes,value->blob.size);
-
-        // get data
-        int num_parts = get_config_int(typed_ctxt->get_service_client_ref(),std::string(OBJ_CONFIG_NUM_ENTRY_PARTS));
-        std::vector<derecho::rpc::QueryResults<const derecho::cascade::ObjectWithStringKey>> res;
-
-        // send gets
-        for(int i=0;i<num_parts;i++){
-            std::string data_key = OBJ_ENTRY_PATH OBJ_PATH_SEP "data_" + std::to_string(i);
-            res.push_back(typed_ctxt->get_service_client_ref().get(data_key));
-        }
-
-        // get objects
-        const uint8_t* blob_bytes[num_parts];
-        std::size_t blob_size[num_parts];
-        for(int i=0;i<num_parts;i++){
-            for (auto& reply_future:res[i].get()){
-                auto data_obj = reply_future.second.get();
-                blob_bytes[i] = data_obj.blob.bytes;
-                blob_size[i] = data_obj.blob.size;
-            }
-        }
-
-        // hash data after getting all objects
-        for(int i=0;i<num_parts;i++){
-            hashes += hash_blob(blob_bytes[i],blob_size[i]);
-        }
         int category = hashes % NUM_CATEGORIES;
 
         // make a copy

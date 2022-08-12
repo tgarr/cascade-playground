@@ -130,12 +130,6 @@ node_id_t setup(ServiceClientAPI& capi,int object_size,int object_rate,int entry
 
     std::cout << "Putting data objects ... "; fflush(stdout);
 
-    // entry data
-    for(int i=num_entry_parts-entry_parts_to_put;i<num_entry_parts;i++){
-        std::string data_key = OBJ_ENTRY_PATH OBJ_PATH_SEP "data_" + std::to_string(i);
-        put_random_object(capi,data_key,entry_part_size);
-    }
-
     // categories data
     for(int c=0;c<NUM_CATEGORIES;c++){
         for(int i=num_data_parts-parts_to_put;i<num_data_parts;i++){

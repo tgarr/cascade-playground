@@ -1,5 +1,6 @@
 #include <cascade/user_defined_logic_interface.hpp>
 #include <iostream>
+#include <chrono>
 #include "common.hpp"
 
 namespace derecho{
@@ -31,9 +32,12 @@ class CategoryObserver: public OffCriticalDataPathObserver {
         const auto* const value = dynamic_cast<const ObjectWithStringKey* const>(value_ptr);
         auto result = hash_blob(value->blob.bytes,value->blob.size);
 
-        // get data and compute result
+        // measure time to get data
+
         int num_parts = get_config_int(typed_ctxt->get_service_client_ref(),std::string(OBJ_CONFIG_NUM_DATA_PARTS));
         std::vector<derecho::rpc::QueryResults<const derecho::cascade::ObjectWithStringKey>> res;
+
+        auto now = std::chrono::high_resolution_clock::now(); 
 
         // send gets
         for(int i=0;i<num_parts;i++){
@@ -52,10 +56,9 @@ class CategoryObserver: public OffCriticalDataPathObserver {
             }
         }
 
-        // hash data after getting all objects
-        for(int i=0;i<num_parts;i++){
-            result += hash_blob(blob_bytes[i],blob_size[i]);
-        }
+        auto elapsed = std::chrono::high_resolution_clock::now() - start;
+        auto latency = std::chrono::duration_cast<std::chrono::microseconds>(elapsed);
+        std::cerr << "obj " << obj_id << " | node " << typed_ctxt->get_service_client_ref().get_my_id(); << " | latency " << latency.count() << std::endl;
 
         // put result
         ObjectWithStringKey obj;
