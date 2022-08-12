@@ -58,7 +58,7 @@ class CategoryObserver: public OffCriticalDataPathObserver {
 
         auto elapsed = std::chrono::high_resolution_clock::now() - start;
         auto latency = std::chrono::duration_cast<std::chrono::microseconds>(elapsed);
-        std::cerr << "obj " << obj_id << " | node " << typed_ctxt->get_service_client_ref().get_my_id(); << " | latency " << latency.count() << std::endl;
+        std::cerr << "obj " << obj_id << " | node " << typed_ctxt->get_service_client_ref().get_my_id() << " | latency " << latency.count() << std::endl;
 
         // put result
         ObjectWithStringKey obj;
