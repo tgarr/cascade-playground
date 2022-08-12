@@ -37,7 +37,7 @@ class CategoryObserver: public OffCriticalDataPathObserver {
         int num_parts = get_config_int(typed_ctxt->get_service_client_ref(),std::string(OBJ_CONFIG_NUM_DATA_PARTS));
         std::vector<derecho::rpc::QueryResults<const derecho::cascade::ObjectWithStringKey>> res;
 
-        auto now = std::chrono::high_resolution_clock::now(); 
+        auto start = std::chrono::high_resolution_clock::now();
 
         // send gets
         for(int i=0;i<num_parts;i++){
