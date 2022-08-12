@@ -43,8 +43,8 @@ max_p2p_request_payload_size = 1048576
 max_p2p_reply_payload_size = 1048576
 
 # window size for P2P requests and replies
-#p2p_window_size = 4
-p2p_window_size = 8
+p2p_window_size = 4
+#p2p_window_size = 8
 
 # Subgroup configurations
 
@@ -58,8 +58,8 @@ block_size = 1048576
 #max_reply_payload_size = 1048576
 max_reply_payload_size = 10240
 
-window_size = 16
-#window_size = 8
+#window_size = 16
+window_size = 8
 
 rdmc_send_algorithm = binomial_send
 max_smc_payload_size = 10240
@@ -164,14 +164,14 @@ domain = mlx5_3
 # 3. tx_depth 
 # tx_depth applies to hints->tx_attr->size, where hint is a struct fi_info object.
 # see https://ofiwg.github.io/libfabric/master/man/fi_getinfo.3.html
-#tx_depth = 256
-tx_depth = 4096
+tx_depth = 256
+#tx_depth = 4096
 
 # 4. rx_depth:
 # rx_depth applies to hints->rx_attr->size, where hint is a struct fi_info object.
 # see https://ofiwg.github.io/libfabric/master/man/fi_getinfo.3.html
-#rx_depth = 256
-rx_depth = 4096
+rx_depth = 256
+#rx_depth = 4096
 
 # Persistent configurations
 [PERS]
