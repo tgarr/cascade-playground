@@ -5,7 +5,7 @@ entry_part_size="1000000"
 data_part_size="1000000"
 
 object_rate="50"
-num_entry_parts="5"
+num_entry_parts="0"
 num_data_parts="50"
 
 for epsz in $entry_part_size; do
