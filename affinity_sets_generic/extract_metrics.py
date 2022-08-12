@@ -17,6 +17,7 @@ for line in f.readlines():
 f.close()
 
 avg = sum(values) / float(len(values))
+print("num:\t\t%d" % len(values))
 print("average:\t%.2f" % avg)
 print("min:\t\t%d " % min(values))
 print("max:\t\t%d" % max(values))
