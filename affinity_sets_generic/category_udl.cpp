@@ -42,7 +42,7 @@ class CategoryObserver: public OffCriticalDataPathObserver {
         // send gets
         for(int i=0;i<num_parts;i++){
             std::string data_key = OBJ_DATA_CATEGORY_PATH OBJ_PATH_SEP + category + OBJ_PATH_SEP + std::to_string(i);
-            res.push_back(typed_ctxt->get_service_client_ref().get(data_key));
+            res.push_back(typed_ctxt->get_service_client_ref().get(data_key,CURRENT_VERSION,false));
         }
 
         // get objects
