@@ -40,9 +40,9 @@ using namespace derecho::cascade;
 #define ENTRY_AFFINITY_KEY "entry"
 
 #define CLIENT_RETURN_UDP_PORT 43259
-#define CLIENT_RETURN_TIMEOUT 10
+#define CLIENT_RETURN_TIMEOUT 5
 #define RETURN_MESSAGE_SIZE sizeof(int)*3
-#define CLIENT_WAIT_BEFORE_END 30
+#define CLIENT_WAIT_BEFORE_END 10
 
 #define CLIENT_SEED 49357
 #define RANDOM_BUFFER_CHUNK 100
