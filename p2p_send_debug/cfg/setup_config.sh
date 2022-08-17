@@ -22,8 +22,8 @@ while (( i <= NUM_SHARDS + 1 )); do
     # cascade configs
     mkdir -p n$i
     ln -sf ../$LAYOUT_TMP n$i/$LAYOUT_CFG
-    #ln -sf ../$DFGS_TMP n$i/$DFGS_CFG
-    #ln -sf ../$DLL_TMP n$i/$DLL_CFG
+    ln -sf ../$DFGS_TMP n$i/$DFGS_CFG
+    ln -sf ../$DLL_TMP n$i/$DLL_CFG
 
     # derecho config
     node_ip=$((i+1))

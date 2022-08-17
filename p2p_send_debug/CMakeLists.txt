@@ -13,13 +13,13 @@ find_package(derecho CONFIG REQUIRED)
 find_package(cascade CONFIG REQUIRED)
 
 # Debug UDL
-#[[add_library(debug_udl SHARED debug_udl.cpp)
+add_library(debug_udl SHARED debug_udl.cpp)
 target_include_directories(debug_udl PRIVATE
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
-)]]
+)
 
 # setup binary
 add_executable(debug_setup debug_setup.cpp)

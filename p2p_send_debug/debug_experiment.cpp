@@ -44,6 +44,7 @@ void experiment(ServiceClientAPI& capi,std::string &mode,int duration,int object
 
 int main(int argc, char** argv) {
     if(!usage(argc,argv)) return 0;
+    cpu_affinity(1);
 
     // connect to service
     std::cout << "Connecting to Cascade ... "; fflush(stdout);
