@@ -17,7 +17,7 @@
                             {
                                 "min_nodes_by_shard": ["1"],
                                 "max_nodes_by_shard": ["1"],
-                                "delivery_modes_by_shard": ["Ordered"],
+                                "delivery_modes_by_shard": ["Ordered","Ordered"],
                                 "reserved_node_ids_by_shard": [["1"],["2"]],
                                 "profiles_by_shard": ["EVAL","EVAL"]
                             }
