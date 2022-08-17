@@ -24,9 +24,9 @@ using namespace derecho::cascade;
 #define REMOTE_SHARD_INDEX 1 // shard in which the UDL will get objects remotely
 
 // cascade paths
-#define LOCAL_OBJECT_PATH "/local/" // make the UDL run on the shard storing the UDL objects
-#define REMOTE_OBJECT_PATH "/remote/" // make the UDL run on the shard not storing the UDL objects
-#define UDL_OBJECT_PATH "/udl/" // UDL objects
+#define LOCAL_OBJECT_PATH "/local" // make the UDL run on the shard storing the UDL objects
+#define REMOTE_OBJECT_PATH "/remote" // make the UDL run on the shard not storing the UDL objects
+#define UDL_OBJECT_PATH "/udl" // UDL objects
 
 // random object generation
 #define CLIENT_SEED 49357
@@ -91,15 +91,15 @@ std::chrono::high_resolution_clock::time_point put_random_object(ServiceClientAP
 // object paths
 
 std::string local_object_path(const std::string &key){
-    return LOCAL_OBJECT_PATH + key;
+    return LOCAL_OBJECT_PATH "/" + key;
 }
 
 std::string remote_object_path(const std::string &key){
-    return REMOTE_OBJECT_PATH + key;
+    return REMOTE_OBJECT_PATH "/" + key;
 }
 
 std::string udl_object_path(const std::string &key){
-    return UDL_OBJECT_PATH + key;
+    return UDL_OBJECT_PATH "/" + key;
 }
 
 // other stuff
