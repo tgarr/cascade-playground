@@ -7,7 +7,7 @@ CLIENTBIN=$SCRIPTPATH/debug_experiment
 
 cd $SCRIPTPATH/cfg/client
 rm -rf .plog
-$CLIENTBIN $@ 2>> $SCRIPTPATH/local.results | tee $SCRIPTPATH/local.output
+$CLIENTBIN $@ | tee $SCRIPTPATH/experiment.output
 
 cd $CURDIR
 
