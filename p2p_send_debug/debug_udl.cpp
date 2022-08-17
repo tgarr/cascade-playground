@@ -30,7 +30,7 @@ class DebugObserver: public OffCriticalDataPathObserver {
             std::string key = udl_object_path(std::to_string(i));
             long long int latency;
             
-            res.push_back(typed_ctxt->get_service_client_ref().get(key,CURRENT_VERSION,false,&latency));
+            queries.push_back(typed_ctxt->get_service_client_ref().get(key,CURRENT_VERSION,false,&latency));
             p2p_send_latencies.push_back(latency);
         }
 
@@ -38,7 +38,7 @@ class DebugObserver: public OffCriticalDataPathObserver {
         std::vector<long long int> wait_latencies;
         for(int i=0;i<UDL_OBJECTS_NUM;i++){
             auto start = std::chrono::high_resolution_clock::now();
-            for (auto& reply_future:res[i].get()){
+            for (auto& reply_future:queries[i].get()){
                 auto obj = reply_future.second.get();
             }
             auto elapsed = std::chrono::high_resolution_clock::now() - start;
