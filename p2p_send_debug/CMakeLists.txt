@@ -21,33 +21,28 @@ target_include_directories(debug_udl PRIVATE
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
 )]]
 
-# Client and config files
+# setup binary
 add_executable(debug_setup debug_setup.cpp)
 set_target_properties(debug_setup PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES ${cascade_INCLUDE_DIRS}
 )
 target_link_libraries(debug_setup derecho::cascade)
 
-#[[add_executable(debug_local debug_local.cpp)
-set_target_properties(debug_local PROPERTIES
+# experiment binary
+add_executable(debug_experiment debug_experiment.cpp)
+set_target_properties(debug_experiment PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES ${cascade_INCLUDE_DIRS}
 )
-target_link_libraries(debug_local derecho::cascade)]]
+target_link_libraries(debug_local derecho::cascade)
 
-#[[add_executable(debug_remote debug_remote.cpp)
-set_target_properties(debug_remote PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES ${cascade_INCLUDE_DIRS}
-)
-target_link_libraries(debug_remote derecho::cascade)]]
-
+# config
 add_custom_command(TARGET debug_setup POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/cfg
         ${CMAKE_CURRENT_BINARY_DIR}/cfg
     COMMAND ${CMAKE_CURRENT_BINARY_DIR}/cfg/setup_config.sh
     COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-server.sh ${CMAKE_CURRENT_BINARY_DIR}/
     COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-setup.sh ${CMAKE_CURRENT_BINARY_DIR}/
-    #COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-local.sh ${CMAKE_CURRENT_BINARY_DIR}/
-    #COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-remote.sh ${CMAKE_CURRENT_BINARY_DIR}/
+    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-experiment.sh ${CMAKE_CURRENT_BINARY_DIR}/
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cfg/setup_config.sh
             ${CMAKE_CURRENT_SOURCE_DIR}/cfg/layout.json.tmp
             ${CMAKE_CURRENT_SOURCE_DIR}/cfg/dfgs.json.tmp
@@ -55,7 +50,6 @@ add_custom_command(TARGET debug_setup POST_BUILD
             ${CMAKE_CURRENT_SOURCE_DIR}/cfg/derecho.cfg.rdma
             ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-server.sh
             ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-setup.sh
-            #${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-local.sh
-            #${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-remote.sh
+            ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-experiment.sh
 )
 
