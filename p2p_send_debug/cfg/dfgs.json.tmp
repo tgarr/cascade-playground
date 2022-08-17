@@ -7,13 +7,13 @@
                 "pathname": "/local/",
                 "shard_dispatcher_list": ["one"],
                 "user_defined_logic_list": ["8eb917ad-5c51-44de-be0c-2d2803898fd1"],
-                "destinations": []
+                "destinations": [{}]
             },
             {
                 "pathname": "/remote/",
                 "shard_dispatcher_list": ["one"],
                 "user_defined_logic_list": ["8eb917ad-5c51-44de-be0c-2d2803898fd1"],
-                "destinations": []
+                "destinations": [{}]
             }
         ]
     }
