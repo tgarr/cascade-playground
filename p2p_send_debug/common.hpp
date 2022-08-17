@@ -13,44 +13,24 @@
 
 using namespace derecho::cascade;
 
-// duration in number of objects sent by client
-#ifndef EXPERIMENT_DURATION
-#define EXPERIMENT_DURATION 1500
-#endif
+#define EXPERIMENT_DURATION 1500 // duration in number of objects sent by client
+#define OBJECT_RATE 50 // throughput
+#define CLIENT_OBJECT_SIZE 1000 // size of objects sent by client
+#define UDL_OBJECTS_NUM 100 // number of objects to be get by the UDL
+#define UDL_OBJECTS_SIZE 1000000 // size of objects to be get by the UDL
 
-// throughput
-#ifndef OBJECT_RATE
-#define OBJECT_RATE 50
-#endif
-
-// size of objects sent by client
-#ifndef CLIENT_OBJECT_SIZE
-#define CLIENT_OBJECT_SIZE 1000
-#endif
-
-// number of objects to be get by the UDL
-#ifndef UDL_OBJECTS_NUM
-#define UDL_OBJECTS_NUM 100
-#endif
-
-// size of objects to be get by the UDL
-#ifndef UDL_OBJECTS_SIZE
-//#define UDL_OBJECTS_SIZE 100000 // 100KB
-#define UDL_OBJECTS_SIZE 1000000 // 1MB
-#endif
-
-#define SUBGROUP_INDEX 0
-#define STORAGE_SHARD_INDEX 0
-#define REMOTE_SHARD_INDEX 1
-
-#define CLIENT_SEED 49357
-#define RANDOM_BUFFER_CHUNK 100
+#define SUBGROUP_INDEX 0 // all in the same subgroup
+#define STORAGE_SHARD_INDEX 0 // shard that will store all udl objects
+#define REMOTE_SHARD_INDEX 1 // shard in which the UDL will get objects remotely
 
 // cascade paths
-#define LOCAL_OBJECT_PATH "/local/"
-#define REMOTE_OBJECT_PATH "/remote/"
-#define UDL_OBJECT_PATH "/udl/"
+#define LOCAL_OBJECT_PATH "/local/" // make the UDL run on the shard storing the UDL objects
+#define REMOTE_OBJECT_PATH "/remote/" // make the UDL run on the shard not storing the UDL objects
+#define UDL_OBJECT_PATH "/udl/" // UDL objects
 
+// random object generation
+#define CLIENT_SEED 49357
+#define RANDOM_BUFFER_CHUNK 100
 static std::mt19937 cascade_client_rng(CLIENT_SEED);
 
 void set_client_seed(int seed){
@@ -72,6 +52,7 @@ char * random_buffer(int size){
     return buffer;
 }
 
+// create object pool on the cascade volatile store
 void create_pool(ServiceClientAPI& capi,const std::string& path,const std::unordered_map<std::string,uint32_t>& object_locations = {}){
     // check if already exists
     auto opm = capi.find_object_pool(path);
@@ -83,15 +64,17 @@ void create_pool(ServiceClientAPI& capi,const std::string& path,const std::unord
     }
 }
 
+// put a given object, wait, and return the timestamp of the put
 std::chrono::high_resolution_clock::time_point put_object(ServiceClientAPI& capi, ObjectWithStringKey& obj){
-    auto res = capi.put(obj);
     auto now = std::chrono::high_resolution_clock::now();
+    auto res = capi.put(obj);
     for (auto& reply_future:res.get()){
         auto reply = reply_future.second.get();
     }
     return now;
 }
 
+// put a random object, wait, and return the timestamp of the put
 std::chrono::high_resolution_clock::time_point put_random_object(ServiceClientAPI& capi,const std::string& key,int size){
     ObjectWithStringKey obj;
     obj.key = key;
@@ -105,12 +88,7 @@ std::chrono::high_resolution_clock::time_point put_random_object(ServiceClientAP
     return put_object(capi,obj);
 }
 
-void cpu_affinity(int core_id){
-    cpu_set_t cpuset;
-    CPU_ZERO(&cpuset);
-    CPU_SET(core_id,&cpuset);
-    sched_setaffinity(0,sizeof(cpu_set_t),&cpuset);
-}
+// object paths
 
 std::string local_object_path(const std::string &key){
     return LOCAL_OBJECT_PATH + key;
@@ -122,6 +100,15 @@ std::string remote_object_path(const std::string &key){
 
 std::string udl_object_path(const std::string &key){
     return UDL_OBJECT_PATH + key;
+}
+
+// other stuff
+
+void cpu_affinity(int core_id){
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(core_id,&cpuset);
+    sched_setaffinity(0,sizeof(cpu_set_t),&cpuset);
 }
 
 #endif

@@ -40,22 +40,22 @@ set_target_properties(debug_remote PROPERTIES
 )
 target_link_libraries(debug_remote derecho::cascade)]]
 
-#[[
 add_custom_command(TARGET debug_setup POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/cfg
         ${CMAKE_CURRENT_BINARY_DIR}/cfg
-    COMMAND ${CMAKE_CURRENT_BINARY_DIR}/cfg/setup_config.sh ${NUM_SHARDS} ${RUN_MODE}
-    #COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-client.sh ${CMAKE_CURRENT_BINARY_DIR}/
-    #COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-client-all.sh ${CMAKE_CURRENT_BINARY_DIR}/
-    #COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-server.sh ${CMAKE_CURRENT_BINARY_DIR}/
+    COMMAND ${CMAKE_CURRENT_BINARY_DIR}/cfg/setup_config.sh
+    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-server.sh ${CMAKE_CURRENT_BINARY_DIR}/
+    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-setup.sh ${CMAKE_CURRENT_BINARY_DIR}/
+    #COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-local.sh ${CMAKE_CURRENT_BINARY_DIR}/
+    #COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-remote.sh ${CMAKE_CURRENT_BINARY_DIR}/
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cfg/setup_config.sh
             ${CMAKE_CURRENT_SOURCE_DIR}/cfg/layout.json.tmp
             ${CMAKE_CURRENT_SOURCE_DIR}/cfg/dfgs.json.tmp
             ${CMAKE_CURRENT_SOURCE_DIR}/cfg/udl_dlls.cfg.tmp
             ${CMAKE_CURRENT_SOURCE_DIR}/cfg/derecho.cfg.rdma
-            #${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-client.sh
-            #${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-client-all.sh
-            #${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-server.sh
+            ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-server.sh
+            ${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-setup.sh
+            #${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-local.sh
+            #${CMAKE_CURRENT_SOURCE_DIR}/cloudlab-remote.sh
 )
-]]
 
