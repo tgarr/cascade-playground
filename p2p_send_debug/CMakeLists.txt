@@ -33,7 +33,7 @@ add_executable(debug_experiment debug_experiment.cpp)
 set_target_properties(debug_experiment PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES ${cascade_INCLUDE_DIRS}
 )
-target_link_libraries(debug_local derecho::cascade)
+target_link_libraries(debug_experiment derecho::cascade)
 
 # config
 add_custom_command(TARGET debug_setup POST_BUILD
