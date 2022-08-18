@@ -2,7 +2,7 @@
 import sys
 import numpy as np
 
-OBJ_SKIP = 100
+OBJ_SKIP = 500
 
 f = open(sys.argv[1],"r")
 

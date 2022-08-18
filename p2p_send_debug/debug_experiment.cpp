@@ -6,12 +6,12 @@
 
 bool usage(int argc, char** argv){
     bool ok = true;
-    if(argc < 2) ok = false;
+    if(argc < 3) ok = false;
     else {
         std::string mode(argv[1]);
         if((mode != "local") && (mode != "remote")) ok = false;
     }
-    if(!ok) std::cout << argv[0] << " <local|remote>" << std::endl;
+    if(!ok) std::cout << argv[0] << " <local|remote> <object_rate>" << std::endl;
     return ok;
 }
 
@@ -54,7 +54,8 @@ int main(int argc, char** argv) {
     // parameters
     std::string mode(argv[1]);
     int duration = EXPERIMENT_DURATION;
-    int object_rate = OBJECT_RATE;
+    //int object_rate = OBJECT_RATE;
+    int object_rate = std::stoi(argv[2]);
     int object_size = CLIENT_OBJECT_SIZE;
 
     experiment(capi,mode,duration,object_rate,object_size);

@@ -13,9 +13,9 @@
 
 using namespace derecho::cascade;
 
-#define EXPERIMENT_DURATION 1100 // duration in number of objects sent by client
+#define EXPERIMENT_DURATION 1500 // duration in number of objects sent by client
 #define OBJECT_RATE 10 // throughput
-#define CLIENT_OBJECT_SIZE 100 // size of objects sent by client
+#define CLIENT_OBJECT_SIZE 1000 // size of objects sent by client
 #define UDL_OBJECTS_NUM 100 // number of objects to be get by the UDL
 #define UDL_OBJECTS_SIZE 1000000 // size of objects to be get by the UDL
 
