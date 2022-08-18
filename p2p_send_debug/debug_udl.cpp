@@ -47,8 +47,17 @@ class DebugObserver: public OffCriticalDataPathObserver {
         }
 
         // print results
-        // TODO
-        std::cerr << "P2P_SEND " << obj_id << std::endl; 
+        std::cerr << "P2P_SEND " << obj_id;
+        for(int i=0;i<UDL_OBJECTS_NUM;i++){
+            std::cerr << " " << p2p_send_latencies[i];
+        }
+        std::cerr << std::endl;
+        
+        std::cerr << "WAIT " << obj_id;
+        for(int i=0;i<UDL_OBJECTS_NUM;i++){
+            std::cerr << " " << wait_latencies[i];
+        }
+        std::cerr << std::endl;
     }
 
     static std::shared_ptr<OffCriticalDataPathObserver> ocdpo_ptr;
