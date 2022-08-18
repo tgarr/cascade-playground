@@ -3,6 +3,7 @@ import sys
 import numpy as np
 
 OBJ_SKIP = 500
+NUM_PARTS = 100
 
 f = open(sys.argv[1],"r")
 
@@ -12,6 +13,7 @@ wait_latencies = []
 
 for line in f.readlines():
     values = line.split()
+    if len(values) != NUM_PARTS+2: continue
 
     try:
         if int(values[1]) < OBJ_SKIP: continue
