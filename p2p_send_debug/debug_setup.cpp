@@ -3,6 +3,14 @@
 #include <unordered_map>
 #include "common.hpp"
 
+bool usage(int argc, char** argv){
+    if(argc < 2) {
+        std::cout << argv[0] << " <udl_object_size>" << std::endl;
+        return false;
+    }
+    return true;
+}
+
 void setup(ServiceClientAPI& capi,int duration,int udl_objects_num,int udl_objects_size){
     // map client objects to the correct shard (where the UDL will run)
     std::unordered_map<std::string,uint32_t> local,remote;
@@ -33,6 +41,8 @@ void setup(ServiceClientAPI& capi,int duration,int udl_objects_num,int udl_objec
 }
 
 int main(int argc, char** argv) {
+    if(!usage(argc,argv)) return 0;
+
     // connect to service
     std::cout << "Connecting to Cascade ... "; fflush(stdout);
     ServiceClientAPI capi;
@@ -41,7 +51,8 @@ int main(int argc, char** argv) {
     // parameters
     int duration = EXPERIMENT_DURATION;
     int udl_objects_num = UDL_OBJECTS_NUM;
-    int udl_objects_size = UDL_OBJECTS_SIZE;
+    //int udl_objects_size = UDL_OBJECTS_SIZE;
+    int udl_objects_size = std::stoi(argv[1]);
 
     setup(capi,duration,udl_objects_num,udl_objects_size);
 
