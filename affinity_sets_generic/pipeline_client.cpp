@@ -174,6 +174,7 @@ int benchmark(ServiceClientAPI& capi,int object_size,int object_rate,node_id_t c
         if(elapsed < period) std::this_thread::sleep_for(period - elapsed);
 
         object_id++;
+        if(object_id % 100 == 0) std::cout << "  object " << object_id << "/" << BENCHMARK_TIME << std::endl;
     }
     
     std::cout << "Benchmark finished!" << std::endl;
