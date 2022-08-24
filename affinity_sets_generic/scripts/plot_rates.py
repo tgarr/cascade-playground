@@ -4,33 +4,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 from common import *
 
-RATES = [10,20,30,40,50,60,70,80,90,100,110,120,130,140]
-RATES = [10,20,30,40,50,60]
-
 def main(argv):
     fname = argv[1]
+    max_value = 99999999
+    if len(argv) > 2:
+        max_value = int(argv[2])
+   
     data = extract_raw_data(fname)
-    logics = sorted(list(data.keys()))
-
-    avg = {}
-    std = {} 
-    for l in logics: 
-        avg[l] = []
-        std[l] = []
-
-        for r in RATES:
-            exp_config = (OBJECT_SIZE,r,ENTRY_PART_SIZE,NUM_ENTRY_PARTS,DATA_PART_SIZE,NUM_DATA_PARTS,NUM_SHARDS,NUM_CATEGORIES)
-            if exp_config in data[l]:
-                varray = np.array(data[l][exp_config][0])
-                avg[l].append(np.mean(varray))
-                std[l].append(np.std(varray))
-            else:
-                avg[l].append(0)
-                std[l].append(0)
+    rates,avg,std = get_values(data,1,max_value)
+    logics = sorted(list(avg.keys()))
 
     tw = float(len(logics) * BAR_WIDTH)
     step = tw+BAR_WIDTH
-    x = np.arange(0,(len(RATES)-1)*step+0.1,step)
+    x = np.arange(0,(len(rates)-1)*step+0.1,step)
     start = - (BAR_WIDTH/2)*(len(logics)-1)
     i = 0
     for l in logics:
@@ -40,7 +26,7 @@ def main(argv):
 
     plt.ylabel('Microseconds')
     plt.title('Objects / seconds')
-    plt.xticks(x,RATES)
+    plt.xticks(x,rates)
     #plt.yticks(np.arange(0,70000,5000))
     plt.legend()
     

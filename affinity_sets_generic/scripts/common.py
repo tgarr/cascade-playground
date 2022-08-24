@@ -1,13 +1,15 @@
 
+import numpy as np
+
 # default values
-OBJECT_SIZE = 1000
+OBJECT_SIZE = 1000000
 OBJECT_RATE = 50
 
 ENTRY_PART_SIZE = 1000000
 NUM_ENTRY_PARTS = 5
 
 DATA_PART_SIZE = 1000000
-NUM_DATA_PARTS = 50
+NUM_DATA_PARTS = 100
 
 NUM_SHARDS = 5
 NUM_CATEGORIES = 10
@@ -69,4 +71,36 @@ def extract_raw_data(fname):
     f.close()
 
     return data
+
+def get_values(data,index,max_value=99999999):
+    values = []
+    logics = sorted(list(data.keys()))
+    exp_config = None
+
+    for l in logics:
+        for conf in data[l]:
+            exp_config = conf
+            v = conf[index]
+            if v not in values and v <= max_value: values.append(v)
+    values.sort()
+
+    avg = {}
+    std = {}
+    for l in logics:
+        avg[l] = []
+        std[l] = []
+
+        for v in values:
+            conf = list(exp_config)
+            conf[index] = v
+            conf = tuple(conf)
+            if conf in data[l]:
+                varray = np.array(data[l][conf][0])
+                avg[l].append(np.mean(varray))
+                std[l].append(np.std(varray))
+            else:
+                avg[l].append(0)
+                std[l].append(0)
+    
+    return values,avg,std
 
