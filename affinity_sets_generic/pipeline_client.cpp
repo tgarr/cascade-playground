@@ -229,7 +229,11 @@ int main(int argc, char** argv) {
    
     // run benchmark 
     int num_objects = benchmark(capi,object_size,object_rate,client_id,send_timestamps);
-    std::this_thread::sleep_for(std::chrono::seconds(CLIENT_WAIT_BEFORE_END));
+    
+    int wait = CLIENT_SHORT_WAIT;
+    if(AFFINITY_LOGIC == 0) wait = CLIENT_LONG_WAIT;
+    std::this_thread::sleep_for(std::chrono::seconds(wait));
+    
     stop_listen = true;
     listener.join();
     

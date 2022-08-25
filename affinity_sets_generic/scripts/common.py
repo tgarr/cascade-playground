@@ -54,15 +54,16 @@ def extract_raw_data(fname):
                 category = int(values[3])
                 node_id = int(values[4])
 
-                exp_config = (object_size,object_rate,entry_part_size,num_entry_parts,data_part_size,num_data_parts,num_shards,num_categories)
-                if affinity_logic not in data: 
-                    data[affinity_logic] = {}
-                if exp_config not in data[affinity_logic]:
-                    data[affinity_logic][exp_config] = ([],[],[])
+                if latency > 0:
+                    exp_config = (object_size,object_rate,entry_part_size,num_entry_parts,data_part_size,num_data_parts,num_shards,num_categories)
+                    if affinity_logic not in data: 
+                        data[affinity_logic] = {}
+                    if exp_config not in data[affinity_logic]:
+                        data[affinity_logic][exp_config] = ([],[],[])
 
-                data[affinity_logic][exp_config][0].append(latency)
-                data[affinity_logic][exp_config][1].append(category)
-                data[affinity_logic][exp_config][2].append(node_id)
+                    data[affinity_logic][exp_config][0].append(latency)
+                    data[affinity_logic][exp_config][1].append(category)
+                    data[affinity_logic][exp_config][2].append(node_id)
 
             i += 1
             if i >= num_objects:
