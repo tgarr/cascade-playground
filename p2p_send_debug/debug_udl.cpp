@@ -25,6 +25,8 @@ class DebugObserver: public OffCriticalDataPathObserver {
         std::vector<derecho::rpc::QueryResults<const derecho::cascade::ObjectWithStringKey>> queries;
         std::vector<long long int> p2p_send_latencies;
 
+        auto start = std::chrono::high_resolution_clock::now();
+
         // send gets
         for(int i=0;i<UDL_OBJECTS_NUM;i++){
             std::string key = udl_object_path(std::to_string(i));
@@ -46,7 +48,11 @@ class DebugObserver: public OffCriticalDataPathObserver {
             wait_latencies.push_back(latency.count()); 
         }
 
+        auto elapsed = std::chrono::high_resolution_clock::now() - start;
+        auto latency = std::chrono::duration_cast<std::chrono::microseconds>(elapsed);
+
         // print results
+        std::cerr << "GLOBAL " << obj_id << " " << latency.count() << std::endl;
         std::cerr << "P2P_SEND " << obj_id;
         for(int i=0;i<UDL_OBJECTS_NUM;i++){
             std::cerr << " " << p2p_send_latencies[i];
