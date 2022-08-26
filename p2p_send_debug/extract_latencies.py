@@ -3,9 +3,9 @@ import sys
 import numpy as np
 
 OBJ_SKIP = 500
-NUM_PARTS = 100
 
 f = open(sys.argv[1],"r")
+num_parts = int(sys.argv[2])
 
 p2p_latencies = []
 wait_latencies = []
@@ -13,7 +13,7 @@ g_latencies = []
 
 for line in f.readlines():
     values = line.split()
-    if len(values) != NUM_PARTS+2 and len(values) != 3: continue
+    if len(values) != num_parts+2 and len(values) != 3: continue
 
     try:
         if int(values[1]) < OBJ_SKIP: continue
