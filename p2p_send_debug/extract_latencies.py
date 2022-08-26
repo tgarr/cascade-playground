@@ -13,7 +13,7 @@ g_latencies = []
 
 for line in f.readlines():
     values = line.split()
-    if len(values) != NUM_PARTS+2 or len(values) != 3: continue
+    if len(values) != NUM_PARTS+2 and len(values) != 3: continue
 
     try:
         if int(values[1]) < OBJ_SKIP: continue
