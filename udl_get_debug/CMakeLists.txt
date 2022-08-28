@@ -26,7 +26,7 @@ add_executable(udl_get udl_get.cpp)
 set_target_properties(udl_get PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES ${cascade_INCLUDE_DIRS}
 )
-target_link_libraries(debug_experiment derecho::cascade)
+target_link_libraries(udl_get derecho::cascade)
 
 # config
 add_custom_command(TARGET debug_udl POST_BUILD
