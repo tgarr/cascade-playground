@@ -8,7 +8,7 @@ leader_external_port = 32645
 # my local id - each node should have a different id
 local_id = 0
 # my local ip address
-local_ip = 192.168.6.XXX_LOCAL_IP_XXX
+local_ip = 127.0.0.1
 # derecho gms port
 gms_port = 23580
 # derecho rpc port

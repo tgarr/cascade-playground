@@ -6,7 +6,7 @@
 
 bool usage(int argc, char** argv){
     if(argc < 4){
-        std::cout << "usage: " << argv[0] << "<request_rate> <total_requests> <udl_request_size>" << std::endl;
+        std::cout << "usage: " << argv[0] << " <request_rate> <total_requests> <udl_request_size>" << std::endl;
         return false;
     }
     return true;
