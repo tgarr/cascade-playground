@@ -12,6 +12,6 @@ CURDIR=`pwd`
 cd $SCRIPTPATH/cfg/client
 cascade_client dump_timestamps VCSS 0 0 $1
 
-mv $SCRIPTPATH/cfg/server/$1 $SCRIPTPATH
+mv $SCRIPTPATH/cfg/n1/$1 $SCRIPTPATH
 cd $CURDIR
 
