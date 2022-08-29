@@ -28,7 +28,7 @@ class RequesterObserver: public OffCriticalDataPathObserver {
         
         // unpack request
         const auto* const request = dynamic_cast<const ObjectWithStringKey* const>(value_ptr);
-        int *parameters = reinterpret_cast<int*>(request->blob.bytes);
+        const int *parameters = reinterpret_cast<const int*>(request->blob.bytes);
         int rate = parameters[0];
         int total = parameters[1];
         
@@ -43,7 +43,7 @@ class RequesterObserver: public OffCriticalDataPathObserver {
 
             // send request
             global_timestamp_logger.log(TLT_UDLGET(1),my_id,i,get_walltime());
-            auto request = capi.get(UDL_DATA_REQUEST_PATH,CURRENT_VERSION,false);
+            auto &request = capi.get(UDL_DATA_REQUEST_PATH,CURRENT_VERSION,false);
             global_timestamp_logger.log(TLT_UDLGET(2),my_id,i,get_walltime());
             requests.push_back(request);
 
