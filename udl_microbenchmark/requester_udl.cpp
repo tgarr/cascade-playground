@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <chrono>
+#include <thread>
 #include "common.hpp"
 #include <cascade/utils.hpp>
 
@@ -22,7 +23,8 @@ class RequesterObserver: public OffCriticalDataPathObserver {
                               uint32_t worker_id) override {
 
         auto* typed_ctxt = dynamic_cast<DefaultCascadeContextType*>(ctxt);
-        int my_id = typed_ctxt->get_service_client_ref().get_my_id();
+        auto capi = typed_ctxt->get_service_client_ref();
+        int my_id = capi.get_my_id();
 
         // unpack request
         const auto* const request = dynamic_cast<const ObjectWithStringKey* const>(value_ptr);
@@ -31,25 +33,30 @@ class RequesterObserver: public OffCriticalDataPathObserver {
         int total = parameters[1];
 
         // send get requests in the given rate
+        std::vector<derecho::rpc::QueryResults<const derecho::cascade::ObjectWithStringKey>> requests;
+        auto period = std::chrono::nanoseconds(1000000000) / rate;
+        for(int i=0;i<total;i++){
+            // start time
+            auto start = std::chrono::high_resolution_clock::now();
 
+            // send request
+            global_timestamp_logger.log(TLT_UDLGET(1),my_id,i,get_walltime());
+            auto request = capi.get(UDL_DATA_REQUEST_PATH,CURRENT_VERSION,false);
+            global_timestamp_logger.log(TLT_UDLGET(2),my_id,i,get_walltime());
+            requests.push_back(request);
+
+            // sleep
+            auto elapsed = std::chrono::high_resolution_clock::now() - start;
+            if(elapsed < period) std::this_thread::sleep_for(period - elapsed);
+        }
 
         // wait for replies
-
-
-
-
-
-        // get request
-        std::string key = udl_request_path("data");
-        global_timestamp_logger.log(TLT_UDLGET(1),typed_ctxt->get_service_client_ref().get_my_id(),obj_id,get_walltime());
-        auto req = typed_ctxt->get_service_client_ref().get(key,CURRENT_VERSION,false);
-        global_timestamp_logger.log(TLT_UDLGET(2),typed_ctxt->get_service_client_ref().get_my_id(),obj_id,get_walltime());
-
-        // wait future
-        for (auto& reply_future:req.get()){
-            auto obj = reply_future.second.get();
+        for(int i=0;i<total;i++){
+            for (auto& reply_future:requests[i].get()){
+                auto obj = reply_future.second.get();
+            }
+            global_timestamp_logger.log(TLT_UDLGET(3),my_id,i,get_walltime());
         }
-        global_timestamp_logger.log(TLT_UDLGET(3),typed_ctxt->get_service_client_ref().get_my_id(),obj_id,get_walltime());
     }
 
     static std::shared_ptr<OffCriticalDataPathObserver> ocdpo_ptr;
