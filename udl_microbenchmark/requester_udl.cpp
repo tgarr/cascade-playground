@@ -43,7 +43,7 @@ class RequesterObserver: public OffCriticalDataPathObserver {
 
             // send request
             global_timestamp_logger.log(TLT_UDLGET(1),my_id,i,get_walltime());
-            auto &request = capi.get(UDL_DATA_REQUEST_PATH,CURRENT_VERSION,false);
+            const auto request = capi.get(UDL_DATA_REQUEST_PATH,CURRENT_VERSION,false);
             global_timestamp_logger.log(TLT_UDLGET(2),my_id,i,get_walltime());
             requests.push_back(request);
 
