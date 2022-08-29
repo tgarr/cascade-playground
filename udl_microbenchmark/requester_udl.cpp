@@ -43,9 +43,8 @@ class RequesterObserver: public OffCriticalDataPathObserver {
 
             // send request
             global_timestamp_logger.log(TLT_UDLGET(1),my_id,i,get_walltime());
-            const auto &request = capi.get(UDL_DATA_REQUEST_PATH,CURRENT_VERSION,false);
+            requests.push_back(capi.get(UDL_DATA_REQUEST_PATH,CURRENT_VERSION,false));
             global_timestamp_logger.log(TLT_UDLGET(2),my_id,i,get_walltime());
-            requests.push_back(request);
 
             // sleep
             auto elapsed = std::chrono::high_resolution_clock::now() - start;
