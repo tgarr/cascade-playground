@@ -23,14 +23,16 @@ class RequesterObserver: public OffCriticalDataPathObserver {
                               uint32_t worker_id) override {
 
         auto* typed_ctxt = dynamic_cast<DefaultCascadeContextType*>(ctxt);
-        auto capi = typed_ctxt->get_service_client_ref();
+        auto &capi = typed_ctxt->get_service_client_ref();
         int my_id = capi.get_my_id();
-
+        
         // unpack request
         const auto* const request = dynamic_cast<const ObjectWithStringKey* const>(value_ptr);
         int *parameters = reinterpret_cast<int*>(request->blob.bytes);
         int rate = parameters[0];
         int total = parameters[1];
+        
+        std::cout << "[UDL][" << my_id << "] starting to get " << total << "objects, " << rate << "per second" << std::endl;
 
         // send get requests in the given rate
         std::vector<derecho::rpc::QueryResults<const derecho::cascade::ObjectWithStringKey>> requests;
@@ -57,6 +59,8 @@ class RequesterObserver: public OffCriticalDataPathObserver {
             }
             global_timestamp_logger.log(TLT_UDLGET(3),my_id,i,get_walltime());
         }
+
+        std::cout << "[UDL][" << my_id << "] finished" << std::endl;
     }
 
     static std::shared_ptr<OffCriticalDataPathObserver> ocdpo_ptr;
