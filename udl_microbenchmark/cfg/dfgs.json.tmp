@@ -1,0 +1,15 @@
+[
+    {
+        "id": "0ded8033-ba4d-4f66-ad8f-06efbd0db3dd",
+        "desc": "UDL Microbenchmark DFG",
+        "graph": [
+            {
+                "pathname": "/request/",
+                "shard_dispatcher_list": ["one"],
+                "user_defined_logic_list": ["8eb917ad-5c51-44de-be0c-2d2803898fd1"],
+                "destinations": [{}]
+            }
+        ]
+    }
+]
+
