@@ -12,8 +12,8 @@ TAG_UDL_WAIT_END = 8003
 
 if __name__ == "__main__":
     fname = sys.argv[1]
-    if len(argv) > 2:
-        total = int(argv[2]) - SKIP
+    if len(sys.argv) > 2:
+        total = int(sys.argv[2]) - SKIP
     else:
         total = TOTAL - SKIP
 
