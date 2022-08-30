@@ -49,7 +49,7 @@ class RequesterObserver: public OffCriticalDataPathObserver {
             global_timestamp_logger.log(TLT_UDLGET(2),my_id,i,get_walltime());
 
             // wait future in another thread
-            std::thread wait([=,req = std::move(req)]{
+            std::thread wait([req = std::move(req)]{
                 for (auto& reply_future:req.get()){
                     auto obj = reply_future.second.get();
                 }
