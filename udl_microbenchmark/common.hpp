@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <sched.h>
 #include <cascade/service_client_api.hpp>
+#include <pthread.h>
 
 using namespace derecho::cascade;
 
@@ -113,6 +114,8 @@ void cpu_affinity(int core_id){
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
     CPU_SET(core_id,&cpuset);
-    sched_setaffinity(0,sizeof(cpu_set_t),&cpuset);
+
+    pthread_t current_thread = pthread_self();
+    pthread_setaffinity_np(current_thread, sizeof(cpu_set_t), &cpuset);
 }
 
