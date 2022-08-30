@@ -3,8 +3,8 @@ import sys
 import numpy as np
 import array
 
-SKIP = 100
-TOTAL = 1100
+SKIP = 1000
+TOTAL = 11000
 
 TAG_UDL_GET_START = 8001
 TAG_UDL_GET_END = 8002
@@ -47,6 +47,6 @@ if __name__ == "__main__":
     #print(f"num samples: {len(udl_get_lat)}")
     print(f"udl_get_lat: {np.mean(udl_get_lat):.2f} / {np.std(udl_get_lat):.2f}")
     print(f"udl_wait_lat: {np.mean(udl_wait_lat):.2f} / {np.std(udl_wait_lat):.2f}")
-    #print(f"udl_complete_lat: {udl_complete_lat}")
+    print(f"udl_complete_lat: {udl_complete_lat}")
     print(f"throughput: {throughput:.2f}")
 
