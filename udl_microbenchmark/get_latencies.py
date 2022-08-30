@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     udl_get_lat = udl_get_end - udl_get_start
     udl_wait_lat = udl_wait_end - udl_get_end
-    #udl_complete_lat = udl_wait_end[-1] - udl_get_start[0]
+    udl_complete_lat = udl_wait_end[-1] - udl_get_start[0]
     throughput = len(udl_get_lat) / float(udl_complete_lat) * 1000000
 
     #print(f"num samples: {len(udl_get_lat)}")
