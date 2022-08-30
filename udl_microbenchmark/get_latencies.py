@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 
 import sys
 import numpy as np
@@ -13,8 +14,11 @@ TAG_UDL_WAIT_END = 8003
 if __name__ == "__main__":
     fname = sys.argv[1]
     if len(sys.argv) > 2:
-        total = int(sys.argv[2]) - SKIP
+        total = int(sys.argv[2])
+        skip = int(total * 0.1)
+        total = total - skip
     else:
+        skip = SKIP
         total = TOTAL - SKIP
 
     timestamps = dict({
@@ -30,10 +34,10 @@ if __name__ == "__main__":
             obj_id = int(fields[2])
             value = int(fields[3])
 
-            if obj_id < SKIP: continue
+            if obj_id < skip: continue
 
             if tag in timestamps:
-                timestamps[tag][obj_id-SKIP] = value
+                timestamps[tag][obj_id-skip] = value
 
     udl_get_start = np.array(timestamps[TAG_UDL_GET_START])/1e3
     udl_get_end = np.array(timestamps[TAG_UDL_GET_END])/1e3

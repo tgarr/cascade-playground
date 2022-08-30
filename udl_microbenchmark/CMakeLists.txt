@@ -36,6 +36,7 @@ add_custom_command(TARGET udl_microbenchmark POST_BUILD
     COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/run_server.sh ${CMAKE_CURRENT_BINARY_DIR}/
     COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/run_client.sh ${CMAKE_CURRENT_BINARY_DIR}/
     COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/dump_timestamps.sh ${CMAKE_CURRENT_BINARY_DIR}/
+    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/get_latencies.py ${CMAKE_CURRENT_BINARY_DIR}/
     COMMAND ${CMAKE_CURRENT_BINARY_DIR}/setup_config.sh
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/setup_config.sh
             ${CMAKE_CURRENT_SOURCE_DIR}/cfg/layout.json.tmp
