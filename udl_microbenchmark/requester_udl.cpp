@@ -36,7 +36,8 @@ class RequesterObserver: public OffCriticalDataPathObserver {
 
         // send get requests in the given rate
         std::string key(UDL_DATA_REQUEST_PATH);
-        std::vector<derecho::rpc::QueryResults<const derecho::cascade::ObjectWithStringKey>> requests;
+        std::vector<std::thread> wait_threads;
+        wait_threads.reserve(total);
         auto period = std::chrono::nanoseconds(1000000000) / rate;
         for(int i=0;i<total;i++){
             // start time
@@ -44,22 +45,28 @@ class RequesterObserver: public OffCriticalDataPathObserver {
 
             // send request
             global_timestamp_logger.log(TLT_UDLGET(1),my_id,i,get_walltime());
-            requests.push_back(capi.get(key,CURRENT_VERSION,false));
+            auto req = capi.get(key,CURRENT_VERSION,false);
             global_timestamp_logger.log(TLT_UDLGET(2),my_id,i,get_walltime());
+
+            // wait future in another thread
+            std::thread wait([]{
+                for (auto& reply_future:req.get()){
+                    auto obj = reply_future.second.get();
+                }
+                global_timestamp_logger.log(TLT_UDLGET(3),my_id,i,get_walltime());
+            });
+            wait_threads.push_back(std::move(wait));
 
             // sleep
             auto elapsed = std::chrono::high_resolution_clock::now() - start;
             if(elapsed < period) std::this_thread::sleep_for(period - elapsed);
         }
 
-        // wait for replies
+        // wait for threads
         for(int i=0;i<total;i++){
-            for (auto& reply_future:requests[i].get()){
-                auto obj = reply_future.second.get();
-            }
-            global_timestamp_logger.log(TLT_UDLGET(3),my_id,i,get_walltime());
+            wait_threads[i].join();
         }
-
+   
         std::cout << "[UDL][" << my_id << "] finished" << std::endl;
     }
 
