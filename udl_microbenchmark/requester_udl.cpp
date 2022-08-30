@@ -12,7 +12,7 @@ namespace cascade{
 #define UDL_UUID "8eb917ad-5c51-44de-be0c-2d2803898fd1"
 #define UDL_DESC "Request many objects"
 
-void wait_future(const derecho::rpc::QueryResults<const derecho::cascade::ObjectWithStringKey> request,int my_id,int i){
+void wait_future(const derecho::rpc::QueryResults<const derecho::cascade::ObjectWithStringKey> &request,int my_id,int i) const {
     for (auto& reply_future:request.get()){
         auto obj = reply_future.second.get();
     }
