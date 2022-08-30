@@ -35,12 +35,12 @@ class RequesterObserver: public OffCriticalDataPathObserver {
         std::cout << "[UDL][" << my_id << "] starting to get " << total << " objects, " << rate << " per second" << std::endl;
 
         // send get requests in the given rate
+        std::string key(UDL_DATA_REQUEST_PATH);
         std::vector<derecho::rpc::QueryResults<const derecho::cascade::ObjectWithStringKey>> requests;
         auto period = std::chrono::nanoseconds(1000000000) / rate;
         for(int i=0;i<total;i++){
             // start time
             auto start = std::chrono::high_resolution_clock::now();
-            std::string key(UDL_DATA_REQUEST_PATH);
 
             // send request
             global_timestamp_logger.log(TLT_UDLGET(1),my_id,i,get_walltime());
