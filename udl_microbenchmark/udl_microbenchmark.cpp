@@ -14,7 +14,7 @@ bool usage(int argc, char** argv){
     }
     
     if(!ok){
-        std::cout << "usage: " << argv[0] << "<local|remote> <request_rate> <total_requests> <udl_request_size>" << std::endl;
+        std::cout << "usage: " << argv[0] << " <local|remote> <request_rate> <total_requests> <udl_request_size>" << std::endl;
     }
 
     return ok;
