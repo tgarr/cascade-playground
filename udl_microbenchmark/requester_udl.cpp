@@ -13,7 +13,7 @@ namespace cascade{
 #define UDL_DESC "Request many objects"
 
 void wait_future(derecho::rpc::QueryResults<const derecho::cascade::ObjectWithStringKey> request,int my_id,int i){
-    cpu_affinity(15 + (i % 16));
+    cpu_affinity(16 + (i % 16));
     for (auto& reply_future:request.get()){
         auto obj = reply_future.second.get();
     }
