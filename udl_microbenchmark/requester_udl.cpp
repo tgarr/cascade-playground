@@ -12,6 +12,14 @@ namespace cascade{
 #define UDL_UUID "8eb917ad-5c51-44de-be0c-2d2803898fd1"
 #define UDL_DESC "Request many objects"
 
+void wait_future(const derecho::rpc::QueryResults<const derecho::cascade::ObjectWithStringKey> &request,int my_id,int i){
+    for (auto& reply_future:request.get()){
+        auto obj = reply_future.second.get();
+    }
+    global_timestamp_logger.log(TLT_UDLGET(3),my_id,i,get_walltime());
+}
+
+
 class RequesterObserver: public OffCriticalDataPathObserver {
     virtual void operator () (const node_id_t sender,
                               const std::string& key_string,
@@ -49,12 +57,7 @@ class RequesterObserver: public OffCriticalDataPathObserver {
             global_timestamp_logger.log(TLT_UDLGET(2),my_id,i,get_walltime());
 
             // wait future in another thread
-            std::thread wait([req = std::move(req)]{
-                for (auto& reply_future:req.get()){
-                    auto obj = reply_future.second.get();
-                }
-                global_timestamp_logger.log(TLT_UDLGET(3),my_id,i,get_walltime());
-            });
+            std::thread wait(wait_future,req,my_id,i);
             wait_threads.push_back(std::move(wait));
 
             // sleep
