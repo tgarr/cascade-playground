@@ -11,6 +11,8 @@ namespace cascade{
 #define UDL_UUID "8eb917ad-5c51-44de-be0c-2d2803898fd1"
 #define UDL_DESC "Get object and get timestamps"
 
+#define CACHE typed_ctxt->get_cache_ref()
+
 class CacheObserver: public DefaultOffCriticalDataPathObserver {
     virtual void ocdpo_handler (
             const node_id_t             sender,
@@ -21,15 +23,13 @@ class CacheObserver: public DefaultOffCriticalDataPathObserver {
             DefaultCascadeContextType*  typed_ctxt,
             uint32_t                    worker_id) {
 
-        auto cache = typed_ctxt->get_cache_ref();
-
         if(object_pool_pathname == CLIENT_CACHE_REQUEST){
             std::cout << "[CACHE] Caching object " << object.key << std::endl;
-            cache.put(object);
+            CACHE.put(object);
         }
         else if(object_pool_pathname == CLIENT_CACHE_CHECK){
             std::string request_key(reinterpret_cast<const char*>(object.blob.bytes));
-            bool is_cached = cache.is_cached(request_key);
+            bool is_cached = CACHE.is_cached(request_key);
             std::cout << "[CACHE] Cache status for object " << request_key << ": " << is_cached << std::endl;
         }
         else {

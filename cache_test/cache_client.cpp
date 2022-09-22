@@ -8,7 +8,7 @@ void command(ServiceClientAPI& capi,int preput){
     std::cout << "Pre-caching " << preput << " objects ..." << std::endl;
 
     for(int i=0;i<preput;i++){
-        std::string key = CLIENT_CACHE_REQUEST + "/" + std::to_string(i);
+        std::string key = CLIENT_CACHE_REQUEST + ("/" + std::to_string(i));
         std::cout << "  caching " << key << std::endl;
         put_random_object(capi,key,CLIENT_OBJECT_SIZE);
     }
@@ -31,7 +31,7 @@ void command(ServiceClientAPI& capi,int preput){
         else if(op == "check"){
             std::string key = CLIENT_CACHE_REQUEST + ("/" + arg);
             ObjectWithStringKey obj;
-            obj.key = std::sting(CLIENT_CACHE_CHECK) + "/check";
+            obj.key = std::string(CLIENT_CACHE_CHECK) + "/check";
             obj.previous_version = INVALID_VERSION;
             obj.previous_version_by_key = INVALID_VERSION;
             obj.blob = Blob(reinterpret_cast<const uint8_t*>(key.c_str()),key.size()+1);
