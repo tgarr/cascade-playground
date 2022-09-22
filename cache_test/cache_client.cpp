@@ -48,6 +48,8 @@ int main(int argc, char** argv) {
 
     // connect to service
     ServiceClientAPI capi;
+    create_pool(capi,CLIENT_CACHE_REQUEST);
+    create_pool(capi,CLIENT_CACHE_CHECK);
 
     command(capi,preput);
 
