@@ -25,13 +25,13 @@ void command(ServiceClientAPI& capi,int preput){
         std::string arg = cmd.substr(sep+1,cmd.size()-1);
 
         if(op == "cache"){
-            std::string key = CLIENT_CACHE_REQUEST + "/" + arg;
+            std::string key = CLIENT_CACHE_REQUEST + ("/" + arg);
             put_random_object(capi,key,CLIENT_OBJECT_SIZE);
         }
         else if(op == "check"){
-            std::string key = CLIENT_CACHE_REQUEST + "/" + arg;
+            std::string key = CLIENT_CACHE_REQUEST + ("/" + arg);
             ObjectWithStringKey obj;
-            obj.key = CLIENT_CACHE_CHECK + "/check";
+            obj.key = std::sting(CLIENT_CACHE_CHECK) + "/check";
             obj.previous_version = INVALID_VERSION;
             obj.previous_version_by_key = INVALID_VERSION;
             obj.blob = Blob(reinterpret_cast<const uint8_t*>(key.c_str()),key.size()+1);

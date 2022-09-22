@@ -89,5 +89,3 @@ void cpu_affinity(int core_id){
     sched_setaffinity(0,sizeof(cpu_set_t),&cpuset);
 }
 
-#endif
-
