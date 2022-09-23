@@ -203,9 +203,13 @@ json_layout_file = 'layout.json'
 #max_host_cache_size = 1073741824 # 1GiB
 max_host_cache_size = 104857600 # 100MiB
 #max_host_cache_size = 10485760 # 10MiB
+
 cpu_cores = 0-9
-num_workers_for_multicast_ocdp = 4
-num_workers_for_p2p_ocdp = 6
+num_stateless_workers_for_multicast_ocdp = 2
+num_stateless_workers_for_p2p_ocdp = 3
+num_stateful_workers_for_multicast_ocdp = 2
+num_stateful_workers_for_p2p_ocdp = 3
+
 worker_cpu_affinity = '
 {
   "multicast_ocdp" : {
