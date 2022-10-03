@@ -46,7 +46,10 @@ if __name__ == "__main__":
 
             if tag in timestamps:
                 if count[tag] >= skip:
-                    timestamps[tag][count[tag]-skip] = value
+                    try:
+                        timestamps[tag][count[tag]-skip] = value
+                    except:
+                        pass
                 count[tag] += 1
 
     time0 = np.array(timestamps[TAG0])/1e3
