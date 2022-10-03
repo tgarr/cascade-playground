@@ -36,7 +36,7 @@ if __name__ == "__main__":
         })
    
     count = {}
-    for t in [TAG0,TAG1,TAG2,TAG3,TAG4,TAG5]: count[t] = 0
+    for t in [TAG0,TAG1,TAG2,TAG3,TAG4,TAG5,TAG6]: count[t] = 0
     with open(fname,"r") as f:
         for line in f:
             fields = line.split()
