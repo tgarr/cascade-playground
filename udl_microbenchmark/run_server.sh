@@ -3,7 +3,7 @@
 SCRIPT=`readlink -f $0`
 SCRIPTPATH=`dirname $SCRIPT`
 CURDIR=`pwd`
-BASE_IP=29
+BASE_IP=28
 cd $SCRIPTPATH
 
 NODE_ID=$((`hostname -I | cut -d" " -f2 | cut -d. -f4`-BASE_IP))
