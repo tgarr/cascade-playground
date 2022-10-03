@@ -1,11 +1,11 @@
 #!/bin/bash
 
-NUM_SHARDS=2
+NUM_SHARDS=1
 
 SCRIPT=`readlink -f $0`
 SCRIPTPATH=`dirname $SCRIPT`
 CURDIR=`pwd`
-BASE_IP=29
+BASE_IP=28
 cd $SCRIPTPATH/cfg
 
 RDMA_TMP=derecho.cfg.rdma

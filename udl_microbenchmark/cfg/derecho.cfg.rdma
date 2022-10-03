@@ -1,6 +1,6 @@
 [DERECHO]
 # leader ip - the leader's ip address
-leader_ip = 192.168.99.29
+leader_ip = 192.168.99.28
 # leader gms port - the leader's gms port
 leader_gms_port = 23743
 # leader external client port - the leader's 
