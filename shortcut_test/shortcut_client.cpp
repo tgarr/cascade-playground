@@ -4,7 +4,7 @@
 #include <thread>
 #include "common.hpp"
 
-void command(ServiceClientAPI& capi,int preput){
+void command(ServiceClientAPI& capi){
     std::string cmd("");
     while(cmd != "quit"){
         std::cout << "command: ";
@@ -18,7 +18,7 @@ void command(ServiceClientAPI& capi,int preput){
 
         if(op == "store"){
             int sep2 = arg.find(" ");
-            std::string key = CLIENT_STORE_REQUEST + ("/" + arg.substr(0,sep2););
+            std::string key = CLIENT_STORE_REQUEST + ("/" + arg.substr(0,sep2));
             std::string data = arg.substr(sep2+1,arg.size()-1);
             
             ObjectWithStringKey obj;
