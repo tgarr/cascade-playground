@@ -27,7 +27,9 @@ class ShortcutObserver: public DefaultOffCriticalDataPathObserver {
         auto req = capi.get(request_key);
         for (auto& reply_future:req.get()){
             auto obj = reply_future.second.get();
-            std::cout << "[SHORTCUT] Object " << request_key << ": " << reinterpret_cast<const char*>(obj.blob.bytes) << std::endl;
+            if(obj.version != INVALID_VERSION){
+                std::cout << "[SHORTCUT] Object " << request_key << ": " << reinterpret_cast<const char*>(obj.blob.bytes) << std::endl;
+            }
         }
     }
 
