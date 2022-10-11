@@ -12,14 +12,6 @@ namespace cascade{
 #define UDL_UUID "8eb917ad-5c51-44de-be0c-2d2803898fd1"
 #define UDL_DESC "Request many objects"
 
-void wait_future(derecho::rpc::QueryResults<const derecho::cascade::ObjectWithStringKey> request,int my_id,int i){
-    // cpu_affinity(16 + (i % 16));
-    for (auto& reply_future:request.get()){
-        auto obj = reply_future.second.get();
-    }
-    global_timestamp_logger.log(TLT_UDLGET(3),my_id,i,get_walltime());
-}
-
 class RequesterObserver: public OffCriticalDataPathObserver {
     virtual void operator () (const node_id_t sender,
                               const std::string& key_string,
@@ -44,8 +36,6 @@ class RequesterObserver: public OffCriticalDataPathObserver {
 
         // send get requests in the given rate
         std::string key(UDL_DATA_REQUEST_PATH);
-        std::vector<std::thread> wait_threads;
-        wait_threads.reserve(total);
         auto period = std::chrono::nanoseconds(1000000000) / rate;
         for(int i=0;i<total;i++){
             // start time
@@ -56,20 +46,17 @@ class RequesterObserver: public OffCriticalDataPathObserver {
             auto req = capi.get(key,CURRENT_VERSION,false);
             global_timestamp_logger.log(TLT_UDLGET(2),my_id,i,get_walltime());
 
-            // wait future in another thread
-            std::thread wait(wait_future,std::move(req),my_id,i);
-            wait_threads.push_back(std::move(wait));
+            // wait future
+            for (auto& reply_future:req.get()){
+                auto obj = reply_future.second.get();
+            }
+            global_timestamp_logger.log(TLT_UDLGET(3),my_id,i,get_walltime());
 
             // sleep
             auto elapsed = std::chrono::high_resolution_clock::now() - start;
             if(elapsed < period) std::this_thread::sleep_for(period - elapsed);
         }
 
-        // wait for threads
-        for(int i=0;i<total;i++){
-            wait_threads[i].join();
-        }
-   
         std::cout << "[UDL][" << my_id << "] finished" << std::endl;
     }
 
