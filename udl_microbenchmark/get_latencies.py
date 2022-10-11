@@ -4,8 +4,8 @@ import sys
 import numpy as np
 import array
 
-SKIP = 1000
-TOTAL = 11000
+SKIP = 3000
+TOTAL = 33000
 
 TAG_UDL_GET_START = 8001
 TAG_UDL_GET_END = 8002
@@ -13,9 +13,9 @@ TAG_UDL_WAIT_END = 8003
 
 if __name__ == "__main__":
     fname = sys.argv[1]
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 3:
         total = int(sys.argv[2])
-        skip = int(total * 0.1)
+        skip = int(sys.argv[3])
         total = total - skip
     else:
         skip = SKIP
