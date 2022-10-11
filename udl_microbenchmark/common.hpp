@@ -65,17 +65,15 @@ void create_pool(ServiceClientAPI& capi,const std::string& path,const std::unord
 }
 
 // put a given object, wait, and return the timestamp of the put
-std::chrono::high_resolution_clock::time_point put_object(ServiceClientAPI& capi, ObjectWithStringKey& obj){
-    auto now = std::chrono::high_resolution_clock::now();
+void put_object(ServiceClientAPI& capi, ObjectWithStringKey& obj){
     auto res = capi.put(obj);
     for (auto& reply_future:res.get()){
         auto reply = reply_future.second.get();
     }
-    return now;
 }
 
 // put a random object, wait, and return the timestamp of the put
-std::chrono::high_resolution_clock::time_point put_random_object(ServiceClientAPI& capi,const std::string& key,int size){
+void put_random_object(ServiceClientAPI& capi,const std::string& key,int size){
     ObjectWithStringKey obj;
     obj.key = key;
     obj.previous_version = INVALID_VERSION;
@@ -85,27 +83,26 @@ std::chrono::high_resolution_clock::time_point put_random_object(ServiceClientAP
     obj.blob = Blob(reinterpret_cast<const uint8_t*>(buffer),size);
     delete buffer;
 
-    return put_object(capi,obj);
+    put_object(capi,obj);
 }
 
-std::chrono::high_resolution_clock::time_point request_udl(ServiceClientAPI& capi,const std::string& key,int rate,int total){
+void request_udl(ServiceClientAPI& capi,const std::string& key,int total){
     ObjectWithStringKey obj;
     obj.key = key;
     obj.previous_version = INVALID_VERSION;
     obj.previous_version_by_key = INVALID_VERSION;
 
-    int buffer[2] = {rate,total};
-    obj.blob = Blob(reinterpret_cast<const uint8_t*>(buffer),sizeof(buffer));
+    obj.blob = Blob(reinterpret_cast<const uint8_t*>(&total),sizeof(total));
 
     return put_object(capi,obj);
 }
 
-std::chrono::high_resolution_clock::time_point local_request(ServiceClientAPI& capi,int rate,int total){
-    return request_udl(capi,CLIENT_LOCAL_REQUEST_PATH,rate,total);
+void local_request(ServiceClientAPI& capi,int total){
+    return request_udl(capi,CLIENT_LOCAL_REQUEST_PATH,total);
 }
 
-std::chrono::high_resolution_clock::time_point remote_request(ServiceClientAPI& capi,int rate,int total){
-    return request_udl(capi,CLIENT_REMOTE_REQUEST_PATH,rate,total);
+void remote_request(ServiceClientAPI& capi,int total){
+    return request_udl(capi,CLIENT_REMOTE_REQUEST_PATH,total);
 }
 
 // other stuff

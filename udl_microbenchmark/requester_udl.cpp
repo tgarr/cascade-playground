@@ -1,10 +1,8 @@
 #include <cascade/user_defined_logic_interface.hpp>
 #include <iostream>
 #include <string>
-#include <chrono>
-#include <thread>
-#include "common.hpp"
 #include <cascade/utils.hpp>
+#include "common.hpp"
 
 namespace derecho{
 namespace cascade{
@@ -29,18 +27,13 @@ class RequesterObserver: public OffCriticalDataPathObserver {
         // unpack request
         const auto* const request = dynamic_cast<const ObjectWithStringKey* const>(value_ptr);
         const int *parameters = reinterpret_cast<const int*>(request->blob.bytes);
-        int rate = parameters[0];
-        int total = parameters[1];
+        int total = *parameters;
         
-        std::cout << "[UDL][" << my_id << "] starting to get " << total << " objects, " << rate << " per second" << std::endl;
+        std::cout << "[UDL][" << my_id << "] starting to get " << total << " objects ..." << std::endl;
 
-        // send get requests in the given rate
+        // send get requests as fast as possible
         std::string key(UDL_DATA_REQUEST_PATH);
-        auto period = std::chrono::nanoseconds(1000000000) / rate;
         for(int i=0;i<total;i++){
-            // start time
-            auto start = std::chrono::high_resolution_clock::now();
-
             // send request
             global_timestamp_logger.log(TLT_UDLGET(1),my_id,i,get_walltime());
             auto req = capi.get(key,CURRENT_VERSION,false);
@@ -51,10 +44,6 @@ class RequesterObserver: public OffCriticalDataPathObserver {
                 auto obj = reply_future.second.get();
             }
             global_timestamp_logger.log(TLT_UDLGET(3),my_id,i,get_walltime());
-
-            // sleep
-            auto elapsed = std::chrono::high_resolution_clock::now() - start;
-            if(elapsed < period) std::this_thread::sleep_for(period - elapsed);
         }
 
         std::cout << "[UDL][" << my_id << "] finished" << std::endl;
