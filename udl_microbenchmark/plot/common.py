@@ -6,24 +6,27 @@ TAG_UDL_GET_START = 8001
 TAG_UDL_GET_END = 8002
 TAG_UDL_WAIT_END = 8003
 
+DEFAULT_SAMPLES = 110000
+DEFAULT_SKIP = 10000
+
 # plot config
 BAR_WIDTH = 0.4
 
-def extract_data(rate,size,mode,skip=None):
-    fname = "raw/" + str(rate) + "_" + str(size) + "." + str(mode)
+def extract_data(size,mode,samples=None,skip=None):
+    if samples == None:
+        samples = DEFAULT_SAMPLES
+        total = DEFAULT_SAMPLES - DEFAULT_SKIP
+        skip = DEFAULT_SKIP
+    else:
+        if skip == None:
+            skip = 0
+        elif type(skip) == int:
+            total -= skip
+        elif type(skip) == float:
+            skip = int(total * skip)
+            total = total - skip
 
-    total = 0
-    with open(fname,"r") as f:
-        for line in f:
-            if line.startswith(str(TAG_UDL_GET_START) + " "): total += 1
-
-    if skip == None:
-        skip = 0
-    elif type(skip) == int:
-        total -= skip
-    elif type(skip) == float:
-        skip = int(total * skip)
-        total = total - skip
+    fname = f"raw/{size}_{samples}.{mode}"
 
     timestamps = dict({
         TAG_UDL_GET_START: array.array('q',[0]*total),
@@ -55,5 +58,4 @@ def extract_data(rate,size,mode,skip=None):
     throughput = len(udl_get_lat) / float(udl_total_time) * 1000000
 
     return (udl_get_lat,udl_wait_lat,udl_total_lat,throughput)
-
 
