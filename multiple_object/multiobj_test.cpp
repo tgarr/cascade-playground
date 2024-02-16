@@ -35,7 +35,8 @@ void create_pool(ServiceClientAPI& capi,const std::string& path,uint32_t subgrou
     auto opm = capi.find_object_pool(path);
     if (opm.is_valid() && !opm.is_null()) return;
 
-    auto res = capi.template create_object_pool<VolatileCascadeStoreWithStringKey>(path,subgroup_index,HASH,object_locations);
+    //auto res = capi.template create_object_pool<VolatileCascadeStoreWithStringKey>(path,subgroup_index,HASH,object_locations);
+    auto res = capi.template create_object_pool<PersistentCascadeStoreWithStringKey>(path,subgroup_index,HASH,object_locations);
     for (auto& reply_future:res.get()) {
         auto reply = reply_future.second.get();
     }
