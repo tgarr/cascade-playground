@@ -78,11 +78,11 @@ int main(int argc, char** argv){
     };
 
     // send TXs
-    auto tx1_res = capi.put_objects(tx1_objects);
-    auto tx2_res = capi.put_objects(tx23_objects);
-    auto tx3_res = capi.put_objects(tx23_objects);
-    auto tx4_res = capi.put_objects(tx45_objects,tx4_readonly_objects);
-    auto tx5_res = capi.put_objects(tx45_objects);
+    auto tx1_res = capi.put_objects<PersistentCascadeStoreWithStringKey>(tx1_objects);
+    auto tx2_res = capi.put_objects<PersistentCascadeStoreWithStringKey>(tx23_objects);
+    auto tx3_res = capi.put_objects<PersistentCascadeStoreWithStringKey>(tx23_objects);
+    auto tx4_res = capi.put_objects<PersistentCascadeStoreWithStringKey>(tx45_objects,tx4_readonly_objects);
+    auto tx5_res = capi.put_objects<PersistentCascadeStoreWithStringKey>(tx45_objects);
 
     // check results
     for (auto& reply_future : tx1_res.get()){
@@ -189,7 +189,7 @@ persistent::version_t put_object(ServiceClientAPI& capi,ObjectWithStringKey& obj
 transaction_status_t poll_tx_completion(ServiceClientAPI& capi,transaction_id& txid){
     transaction_status_t status = transaction_status_t::PENDING;
 
-    while(status == transaction_status_t::PENDING){
+    while((status != transaction_status_t::COMMIT) && (status != transaction_status_t::ABORT)){
         auto res = capi.get_transaction_status<PersistentCascadeStoreWithStringKey>(txid);
         for (auto& reply_future : res.get()){
             status = reply_future.second.get();
