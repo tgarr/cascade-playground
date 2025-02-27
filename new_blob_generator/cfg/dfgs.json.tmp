@@ -1,0 +1,48 @@
+[
+    {
+        "id": "1f348790-3eda-11ed-8f86-0242ac110006",
+        "desc": "Destination-aware blob generator test DFG",
+        "graph": [
+            {
+                "pathname": "/python/source",
+                "shard_dispatcher_list": ["one"],
+                "user_defined_logic_list": ["6cfe8f64-3a1d-11ed-8e7e-0242ac110006"],
+                "user_defined_logic_stateful_list": ["singlethreaded"],
+                "user_defined_logic_config_list": [
+                    {
+                        "python_path":["."],
+                        "module":"pyudls",
+                        "entry_class":"SourceUDL"
+                    }],
+                "destinations": [{"/python/destination":"trigger_put"}]
+            },
+            {
+                "pathname": "/python/destination",
+                "shard_dispatcher_list": ["one"],
+                "user_defined_logic_list": ["6cfe8f64-3a1d-11ed-8e7e-0242ac110006"],
+                "user_defined_logic_stateful_list": ["singlethreaded"],
+                "user_defined_logic_config_list": [
+                    {
+                        "python_path":["."],
+                        "module":"pyudls",
+                        "entry_class":"DestinationUDL"
+                    }],
+                "destinations": [{}]
+            },
+            {
+                "pathname": "/cpp/source",
+                "shard_dispatcher_list": ["one"],
+                "user_defined_logic_list": ["512e4ccd-7c24-4a23-86cd-17873bbb5576"],
+                "user_defined_logic_config_list": [{}],
+                "destinations": [{"/cpp/destination":"trigger_put"}]
+            },
+            {
+                "pathname": "/cpp/destination",
+                "shard_dispatcher_list": ["one"],
+                "user_defined_logic_list": ["d81617d2-4af2-47e6-9c5a-4758ea17a95c"],
+                "user_defined_logic_config_list": [{}],
+                "destinations": [{}]
+            }
+        ]
+    }
+]
